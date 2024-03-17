@@ -39,28 +39,16 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
     }
   }
 
-  const canGoBack = urlHistory.indexOf(url) > 0
   const handleGoBack = (): void => {
-    const index = urlHistory.indexOf(url)
-    if (index > 0) {
-      setUrl(urlHistory[index - 1])
-      if (inputRef.current) {
-        inputRef.current.blur()
-        inputRef.current.value = urlHistory[index - 1]
-      }
-    }
+    document.querySelectorAll('webview').forEach((webview: Electron.WebviewTag) => {
+      webview.goBack()
+    })
   }
 
-  const canGoForward = urlHistory.indexOf(url) < urlHistory.length - 1
   const handleGoForward = (): void => {
-    const index = urlHistory.indexOf(url)
-    if (index < urlHistory.length - 1) {
-      setUrl(urlHistory[index + 1])
-      if (inputRef.current) {
-        inputRef.current.blur()
-        inputRef.current.value = urlHistory[index + 1]
-      }
-    }
+    document.querySelectorAll('webview').forEach((webview: Electron.WebviewTag) => {
+      webview.goForward()
+    })
   }
 
   const handleReloadWebview = (): void => {
@@ -73,7 +61,6 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
     <div className="fixed top-0 left-0 right-0 px-4 h-[60px] flex justify-center items-center gap-2">
       <div className="flex items-center gap-2">
         <button
-          disabled={!canGoBack}
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
           onClick={handleGoBack}
         >
@@ -81,7 +68,6 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
           <span className="hidden">Go back</span>
         </button>
         <button
-          disabled={!canGoForward}
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
           onClick={handleGoForward}
         >

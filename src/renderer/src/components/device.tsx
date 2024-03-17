@@ -32,6 +32,7 @@ export const Device: React.FC<DeviceProps> = (props) => {
       const handlerRemovers: (() => void)[] = []
 
       const didNavigate = (e: Electron.DidNavigateEvent): void => {
+        console.log('did-navigate', e.url)
         setUrl(e.url)
       }
 
