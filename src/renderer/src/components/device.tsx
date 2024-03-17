@@ -1,7 +1,7 @@
 import { Device as IDevice } from '@/lib/devices'
 import { urlAtom, zoomAtom } from '@/lib/state'
 import { ReloadIcon, RotateCounterClockwiseIcon } from '@radix-ui/react-icons'
-import { useAtomValue } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import React, { useEffect, useRef } from 'react'
 
 type DeviceProps = {
@@ -14,7 +14,7 @@ export const Device: React.FC<DeviceProps> = (props) => {
   const [loading, setLoading] = React.useState<boolean>(false)
   const [error, setError] = React.useState<{ code: number; description: string } | null>(null)
 
-  const url = useAtomValue(urlAtom)
+  const [url, setUrl] = useAtom(urlAtom)
   const zoom = useAtomValue(zoomAtom)
 
   let { width, height } = props.device
@@ -30,6 +30,15 @@ export const Device: React.FC<DeviceProps> = (props) => {
     if (ref.current) {
       const webview = ref.current as Electron.WebviewTag
       const handlerRemovers: (() => void)[] = []
+
+      const didNavigate = (e: Electron.DidNavigateEvent): void => {
+        setUrl(e.url)
+      }
+
+      webview.addEventListener('did-navigate', didNavigate)
+      handlerRemovers.push(() => {
+        webview.removeEventListener('did-navigate', didNavigate)
+      })
 
       const didStartLoading = (): void => {
         setLoading(true)
@@ -69,7 +78,7 @@ export const Device: React.FC<DeviceProps> = (props) => {
         handlerRemovers.forEach((remove) => remove())
       }
     }
-  }, [])
+  }, [ref])
 
   return (
     <>

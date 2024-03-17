@@ -6,6 +6,7 @@ import { defaultDevicesAtom, urlAtom } from './lib/state'
 function App(): JSX.Element {
   const url = useAtomValue(urlAtom)
   const devices = useAtomValue(defaultDevicesAtom)
+
   return (
     <div className="bg-neutral-950">
       <Toolbar />
