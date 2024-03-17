@@ -1,0 +1,16 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always",
+    "source.organizeImports": "always"
+  },
+  "editor. formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor wordWrap": "on",
+  "markdownlint. config": {
+    "MD041": false
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
