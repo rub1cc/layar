@@ -1,8 +1,7 @@
 import { Input } from '@/components/ui/input'
-import { urlAtom, urlHistoryAtom } from '@/lib/state'
-import { appendUrlHistory } from '@/lib/utils'
+import { urlAtom } from '@/lib/state'
 import { ArrowLeftIcon, ArrowRightIcon, ReloadIcon } from '@radix-ui/react-icons'
-import { useAtom, useAtomValue } from 'jotai'
+import { useAtom } from 'jotai'
 import { useRef } from 'react'
 
 type ToolbarProps = {
@@ -11,7 +10,6 @@ type ToolbarProps = {
 
 export const Toolbar: React.FC<ToolbarProps> = () => {
   const [url, setUrl] = useAtom(urlAtom)
-  const urlHistory = useAtomValue(urlHistoryAtom)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>): void => {
@@ -33,10 +31,6 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
       inputRef.current.value = newAddress
     }
     setUrl(newAddress)
-
-    if (urlHistory.indexOf(newAddress) === -1) {
-      appendUrlHistory(newAddress)
-    }
   }
 
   const handleGoBack = (): void => {
@@ -59,7 +53,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
 
   return (
     <div className="fixed top-0 left-0 right-0 px-4 h-[60px] flex justify-center items-center gap-2">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center">
         <button
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
           onClick={handleGoBack}
@@ -89,7 +83,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
           name="url"
           defaultValue={url}
           placeholder="Input URL"
-          className="rounded-full bg-white/5 text-white/80 border-transparent"
+          className="rounded-lg bg-white/10 text-white/80 border-transparent"
         />
 
         <input type="submit" hidden />
