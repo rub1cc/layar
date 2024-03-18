@@ -1,6 +1,5 @@
-import { Input } from '@/components/ui/input'
 import { urlAtom } from '@/lib/state'
-import { ArrowLeftIcon, ArrowRightIcon, ReloadIcon } from '@radix-ui/react-icons'
+import { ArrowLeftIcon, ArrowRightIcon, DotsVerticalIcon, ReloadIcon } from '@radix-ui/react-icons'
 import { useAtom } from 'jotai'
 import { useRef } from 'react'
 
@@ -52,7 +51,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 px-4 h-[60px] flex justify-center items-center gap-2">
+    <div className="fixed top-0 left-0 right-0 px-4 h-[44px] flex justify-center items-center gap-2 bg-neutral-900">
       <div className="flex items-center">
         <button
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
@@ -77,17 +76,25 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
         </button>
       </div>
       <form onSubmit={handleSubmitForm} className="w-full">
-        <Input
+        <input
+          id="address-bar"
           key={url}
           ref={inputRef}
           name="url"
           defaultValue={url}
-          placeholder="Input URL"
-          className="rounded-lg bg-white/10 text-white/80 border-transparent"
+          placeholder="Search or enter website address"
+          className="rounded-md bg-neutral-950 text-white/80 border-transparent text-xs w-full p-2"
         />
 
         <input type="submit" hidden />
       </form>
+      <button
+        className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+        onClick={handleReloadWebview}
+      >
+        <DotsVerticalIcon />
+        <span className="hidden">Reload</span>
+      </button>
     </div>
   )
 }

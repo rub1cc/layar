@@ -34,6 +34,7 @@
     "electron-updater": "^6.1.7",
     "jotai": "^2.7.1",
     "lucide-react": "^0.358.0",
+    "mousetrap": "^1.6.5",
     "pubsub.js": "^1.5.2",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7"

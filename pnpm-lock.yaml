@@ -44,6 +44,9 @@ dependencies:
   lucide-react:
     specifier: ^0.358.0
     version: 0.358.0(react@18.2.0)
+  mousetrap:
+    specifier: ^1.6.5
+    version: 1.6.5
   pubsub.js:
     specifier: ^1.5.2
     version: 1.5.2
@@ -4328,6 +4331,10 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dev: true
+
+  /mousetrap@1.6.5:
+    resolution: {integrity: sha512-QNo4kEepaIBwiT8CDhP98umTetp+JNfQYBWvC1pc6/OAibuXtRcxZ58Qz8skvEHYvURne/7R8T5VoOI7rDsEUA==}
+    dev: false
 
   /ms@2.0.0:
     resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}

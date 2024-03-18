@@ -1,7 +1,7 @@
 import { atom } from 'jotai'
 import { defaultDevices } from './devices'
 
-export const zoomAtom = atom(0.55)
+export const zoomAtom = atom(0.5)
 
 export const urlAtom = atom('https://google.com')
 
