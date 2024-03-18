@@ -146,7 +146,7 @@ export const Device: React.FC<DeviceProps> = (props) => {
           /* eslint-disable-next-line react/no-unknown-property */
           useragent={props.device.userAgent}
           /* eslint-disable-next-line react/no-unknown-property */
-          preload={`file://${window.app.webviewPreloadPath}`}
+          // preload={`file://${window.app.webviewPreloadPath}`}
         />
 
         {error && (
