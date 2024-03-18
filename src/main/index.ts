@@ -45,7 +45,7 @@ function createWindow(): void {
     callback({ responseHeaders: details.responseHeaders })
   })
 
-  ipcMain.handle('app-meta', (event) => {
+  ipcMain.handle('app-meta', () => {
     // get preloadWebview path
     return {
       webviewPreloadPath: preloadWebview
@@ -113,7 +113,7 @@ app.commandLine.appendSwitch('ignore-certificate-errors')
 app.commandLine.appendSwitch('allow-insecure-localhost', 'true')
 
 app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
-  console.log('certificate-error event', url, BROWSER_SYNC_HOST)
+  console.log('certificate-error event', url, BROWSER_SYNC_HOST, webContents, error, certificate)
   if (url.indexOf(BROWSER_SYNC_HOST) !== -1) {
     event.preventDefault()
     return callback(true)

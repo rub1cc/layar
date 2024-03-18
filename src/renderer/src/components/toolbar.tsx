@@ -34,20 +34,20 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
   }
 
   const handleGoBack = (): void => {
-    document.querySelectorAll('webview').forEach((webview: Electron.WebviewTag) => {
-      webview.goBack()
+    document.querySelectorAll('webview').forEach((webview: Element) => {
+      ;(webview as Electron.WebviewTag).goBack()
     })
   }
 
   const handleGoForward = (): void => {
-    document.querySelectorAll('webview').forEach((webview: Electron.WebviewTag) => {
-      webview.goForward()
+    document.querySelectorAll('webview').forEach((webview: Element) => {
+      ;(webview as Electron.WebviewTag).goForward()
     })
   }
 
   const handleReloadWebview = (): void => {
-    document.querySelectorAll('webview').forEach((webview: Electron.WebviewTag) => {
-      webview.reload()
+    document.querySelectorAll('webview').forEach((webview: Element) => {
+      ;(webview as Electron.WebviewTag).reload()
     })
   }
 

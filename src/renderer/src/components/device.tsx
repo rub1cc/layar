@@ -26,6 +26,7 @@ export const Device: React.FC<DeviceProps> = (props) => {
   const scaledWidth = width * zoom
   const scaledHeight = height * zoom
 
+  // @ts-ignore temporarily
   useEffect(() => {
     if (ref.current) {
       const webview = ref.current as Electron.WebviewTag
@@ -60,7 +61,10 @@ export const Device: React.FC<DeviceProps> = (props) => {
         webview.removeEventListener('did-stop-loading', didStopLoading)
       })
 
-      const didFailLoadHandler = ({ errorCode, errorDescription }: Electron.DidFailLoadEvent) => {
+      const didFailLoadHandler = ({
+        errorCode,
+        errorDescription
+      }: Electron.DidFailLoadEvent): undefined => {
         if (errorCode === -3) {
           // Aborted error, can be ignored
           return

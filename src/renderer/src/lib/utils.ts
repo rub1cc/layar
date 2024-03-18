@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 export function debounce<T>(fn: (arg: T) => void, delay: number): (arg: T) => void {
-  let timeout: number
+  let timeout: NodeJS.Timeout
   return function (arg: T) {
     clearTimeout(timeout)
     timeout = setTimeout(() => fn(arg), delay)
