@@ -2,6 +2,8 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { BrowserWindow, app, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
+import preloadWebview from '../preload/webview.js?asset'
+import { BROWSER_SYNC_HOST, initInstance } from './browserSync'
 
 function createWindow(): void {
   // Create the browser window.
@@ -12,6 +14,9 @@ function createWindow(): void {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+      contextIsolation: false,
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       webviewTag: true,
@@ -20,7 +25,35 @@ function createWindow(): void {
     }
   })
 
-  mainWindow.on('ready-to-show', () => {
+  // Add BROWSER_SYNC_HOST to the allowed Content-Security-Policy origins
+  mainWindow.webContents.session.webRequest.onHeadersReceived(async (details, callback) => {
+    if (details.responseHeaders?.['content-security-policy']) {
+      let cspHeader = details.responseHeaders['content-security-policy'][0]
+
+      cspHeader = cspHeader.replace('default-src', `default-src ${BROWSER_SYNC_HOST}`)
+      cspHeader = cspHeader.replace('script-src', `script-src ${BROWSER_SYNC_HOST}`)
+      cspHeader = cspHeader.replace('script-src-elem', `script-src-elem ${BROWSER_SYNC_HOST}`)
+      cspHeader = cspHeader.replace(
+        'connect-src',
+        `connect-src ${BROWSER_SYNC_HOST} wss://${BROWSER_SYNC_HOST} ws://${BROWSER_SYNC_HOST}`
+      )
+      cspHeader = cspHeader.replace('child-src', `child-src ${BROWSER_SYNC_HOST}`)
+      cspHeader = cspHeader.replace('worker-src', `worker-src ${BROWSER_SYNC_HOST}`) // Required when/if the browser-sync script is eventually relocated to a web worker
+
+      details.responseHeaders['content-security-policy'][0] = cspHeader
+    }
+    callback({ responseHeaders: details.responseHeaders })
+  })
+
+  ipcMain.handle('app-meta', (event) => {
+    // get preloadWebview path
+    return {
+      webviewPreloadPath: preloadWebview
+    }
+  })
+
+  mainWindow.on('ready-to-show', async () => {
+    await initInstance()
     mainWindow.show()
   })
 
@@ -78,3 +111,12 @@ app.on('window-all-closed', () => {
 
 app.commandLine.appendSwitch('ignore-certificate-errors')
 app.commandLine.appendSwitch('allow-insecure-localhost', 'true')
+
+app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+  console.log('certificate-error event', url, BROWSER_SYNC_HOST)
+  if (url.indexOf(BROWSER_SYNC_HOST) !== -1) {
+    event.preventDefault()
+    return callback(true)
+  }
+  callback(false)
+})

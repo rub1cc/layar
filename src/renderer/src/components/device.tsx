@@ -1,6 +1,6 @@
 import { Device as IDevice } from '@/lib/devices'
 import { urlAtom, zoomAtom } from '@/lib/state'
-import { ReloadIcon, RotateCounterClockwiseIcon } from '@radix-ui/react-icons'
+import { ReloadIcon, RotateCounterClockwiseIcon, TargetIcon } from '@radix-ui/react-icons'
 import { useAtom, useAtomValue } from 'jotai'
 import React, { useEffect, useRef } from 'react'
 
@@ -112,6 +112,14 @@ export const Device: React.FC<DeviceProps> = (props) => {
             <RotateCounterClockwiseIcon />
             <span className="hidden">Rotate</span>
           </button>
+          <button
+            onClick={() => {
+              ref?.current?.openDevTools()
+            }}
+          >
+            <TargetIcon />
+            <span className="hidden">Devtools</span>
+          </button>
         </div>
       </div>
       <div
@@ -133,6 +141,8 @@ export const Device: React.FC<DeviceProps> = (props) => {
           className="origin-top-left"
           /* eslint-disable-next-line react/no-unknown-property */
           useragent={props.device.userAgent}
+          /* eslint-disable-next-line react/no-unknown-property */
+          preload={`file://${window.app.webviewPreloadPath}`}
         />
 
         {error && (
