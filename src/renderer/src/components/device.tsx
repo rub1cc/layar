@@ -2,6 +2,7 @@ import { Device as IDevice } from '@/lib/devices'
 import { urlAtom, zoomAtom } from '@/lib/state'
 import { ReloadIcon, RotateCounterClockwiseIcon, TargetIcon } from '@radix-ui/react-icons'
 import { useAtom, useAtomValue } from 'jotai'
+import pubsub from 'pubsub.js'
 import React, { useEffect, useRef } from 'react'
 
 type DeviceProps = {
@@ -26,11 +27,50 @@ export const Device: React.FC<DeviceProps> = (props) => {
   const scaledWidth = width * zoom
   const scaledHeight = height * zoom
 
+  const ipcMessageHandler = ({ channel: type, args: [message] }: Electron.IpcMessageEvent) => {
+    switch (type) {
+      case 'scroll':
+        pubsub.publish('scroll', [message])
+        return
+      case 'click':
+        pubsub.publish('click', [message])
+        return
+    }
+  }
+
   // @ts-ignore temporarily
   useEffect(() => {
     if (ref.current) {
       const webview = ref.current as Electron.WebviewTag
       const handlerRemovers: (() => void)[] = []
+
+      const subscriptions: unknown[] = []
+
+      subscriptions.push(
+        pubsub.subscribe('scroll', (message) => {
+          if (message.deviceId === props.device.id) return
+          webview.send('scrollMessage', message)
+        })
+      )
+
+      subscriptions.push(
+        pubsub.subscribe('click', (message) => {
+          if (message.deviceId === props.device.id) return
+          webview.send('clickMessage', message)
+        })
+      )
+
+      const domReadyHandler = (): void => {
+        const message = {
+          deviceId: props.device.id
+        }
+        webview.send('setDeviceIdMessage', message)
+      }
+
+      webview.addEventListener('dom-ready', domReadyHandler)
+      handlerRemovers.push(() => {
+        webview.removeEventListener('dom-ready', domReadyHandler)
+      })
 
       const didNavigate = (e: Electron.DidNavigateEvent): void => {
         console.log('did-navigate', e.url)
@@ -79,8 +119,14 @@ export const Device: React.FC<DeviceProps> = (props) => {
         webview.removeEventListener('did-fail-load', didFailLoadHandler)
       })
 
+      webview.addEventListener('ipc-message', ipcMessageHandler)
+      handlerRemovers.push(() => {
+        webview.removeEventListener('ipc-message', ipcMessageHandler)
+      })
+
       return () => {
         handlerRemovers.forEach((remove) => remove())
+        subscriptions.forEach(pubsub.unsubscribe)
       }
     }
   }, [ref])
@@ -146,7 +192,7 @@ export const Device: React.FC<DeviceProps> = (props) => {
           /* eslint-disable-next-line react/no-unknown-property */
           useragent={props.device.userAgent}
           /* eslint-disable-next-line react/no-unknown-property */
-          // preload={`file://${window.app.webviewPreloadPath}`}
+          preload={`file://${window.app.webviewPreloadPath}`}
         />
 
         {error && (

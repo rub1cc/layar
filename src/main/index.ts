@@ -2,12 +2,13 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { BrowserWindow, app, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
+import preload from '../preload/preload-webview.js?asset'
 
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: 1024,
+    height: 720,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -17,6 +18,12 @@ function createWindow(): void {
       webviewTag: true,
       allowRunningInsecureContent: true,
       webSecurity: false
+    }
+  })
+
+  ipcMain.handle('app-meta', () => {
+    return {
+      webviewPreloadPath: preload
     }
   })
 
