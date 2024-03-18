@@ -1,5 +1,6 @@
 import { urlAtom } from '@/lib/state'
-import { ArrowLeftIcon, ArrowRightIcon, DotsVerticalIcon, ReloadIcon } from '@radix-ui/react-icons'
+
+import { ArrowLeftIcon, ArrowRightIcon, ReloadIcon } from '@radix-ui/react-icons'
 import { useAtom } from 'jotai'
 import { useRef } from 'react'
 
@@ -51,7 +52,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 px-4 h-[44px] flex justify-center items-center gap-2 bg-neutral-900">
+    <div className="fixed top-0 left-0 right-0 px-1.5 h-[44px] flex justify-between items-center gap-2 bg-neutral-800 border-b border-white/5">
       <div className="flex items-center">
         <button
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
@@ -83,18 +84,27 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
           name="url"
           defaultValue={url}
           placeholder="Search or enter website address"
-          className="rounded-md bg-neutral-950 text-white/80 border-transparent text-xs w-full p-2"
+          className="rounded-lg bg-neutral-900/50 border border-neutral-700 text-white/80 border-transparent text-xs w-full p-2"
         />
 
         <input type="submit" hidden />
       </form>
-      <button
-        className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
-        onClick={handleReloadWebview}
-      >
-        <DotsVerticalIcon />
-        <span className="hidden">Reload</span>
-      </button>
+      {/* <Popover>
+        <PopoverTrigger>
+          <button className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed">
+            <DotsVerticalIcon />
+            <span className="hidden">Reload</span>
+          </button>
+        </PopoverTrigger>
+        <PopoverPortal>
+          <PopoverContent
+            align="end"
+            className="bg-neutral-800 border border-neutral-700 p-2 rounded-md text-white/80 shadow-xl text-sm"
+          >
+            Open DevTools
+          </PopoverContent>
+        </PopoverPortal>
+      </Popover> */}
     </div>
   )
 }
