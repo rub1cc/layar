@@ -10,6 +10,7 @@ function createWindow(): void {
     width: 1024,
     height: 720,
     show: false,
+    title: 'Layar',
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {

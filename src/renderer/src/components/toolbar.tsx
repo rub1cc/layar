@@ -1,5 +1,5 @@
 import { deviceAlignmentAtom, urlAtom } from '@/lib/state'
-import { cn } from '@/lib/utils'
+import { cn, isValidURL } from '@/lib/utils'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,6 +49,11 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
     const url = formData.get('url') as string
 
     if (!url) return
+
+    if (!isValidURL(url)) {
+      setUrl('https://google.com/search?q=' + url)
+      return
+    }
 
     let newAddress = url
     if (newAddress.indexOf('://') === -1) {

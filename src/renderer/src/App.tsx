@@ -8,7 +8,7 @@ import { Device } from './components/device'
 import { ToolbarSecondary } from './components/toolbar-secondary'
 import { ZoomIndicator } from './components/zoom-indicator'
 import { deviceAlignmentAtom, devicesAtom, urlAtom, zoomAtom } from './lib/state'
-import { cn } from './lib/utils'
+import { cn, isValidURL } from './lib/utils'
 
 function App(): JSX.Element {
   const url = useAtomValue(urlAtom)
@@ -53,6 +53,11 @@ function App(): JSX.Element {
     const url = formData.get('url') as string
 
     if (!url) return
+
+    if (!isValidURL(url)) {
+      setUrl('https://google.com/search?q=' + url)
+      return
+    }
 
     let newAddress = url
     if (newAddress.indexOf('://') === -1) {
