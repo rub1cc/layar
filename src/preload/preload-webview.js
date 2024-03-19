@@ -1,5 +1,5 @@
 const { ipcRenderer } = require('electron')
-window.devvy = {}
+window.layarApp = {}
 const cssPath = (el) => {
   if (!(el instanceof Element)) return
   const path = []
@@ -25,14 +25,14 @@ window.addEventListener('scroll', () => {
 })
 
 window.addEventListener('click', (e) => {
-  if (e.target === window.devvy.lastClickElement) {
-    window.devvy.lastClickElement = null
+  if (e.target === window.layarApp.lastClickElement) {
+    window.layarApp.lastClickElement = null
     return
   }
 
   ipcRenderer.sendToHost('click', {
     cssPath: cssPath(e.target),
-    deviceId: window.devvy.deviceId
+    deviceId: window.layarApp.deviceId
   })
 })
 
@@ -46,10 +46,10 @@ ipcRenderer.on('scrollMessage', (event, args) => {
 ipcRenderer.on('clickMessage', (event, args) => {
   const el = document.querySelector(args.cssPath)
   if (!el) return
-  window.devvy.lastClickElement = el
+  window.layarApp.lastClickElement = el
   el.click?.()
 })
 
 ipcRenderer.on('setDeviceIdMessage', (event, args) => {
-  window.devvy.deviceId = args.deviceId
+  window.layarApp.deviceId = args.deviceId
 })

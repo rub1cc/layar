@@ -1,4 +1,4 @@
-# devvy
+# Layar
 
 An Electron application with React and TypeScript
 
