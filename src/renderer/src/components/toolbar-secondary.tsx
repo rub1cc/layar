@@ -1,4 +1,4 @@
-import { defaultDevices } from '@/lib/devices'
+import { defaultDevices, presetResponsive } from '@/lib/devices'
 import { devicesAtom } from '@/lib/state'
 import { cn } from '@/lib/utils'
 import { useAtom } from 'jotai'
@@ -17,7 +17,23 @@ export const ToolbarSecondary: React.FC<ToolbarProps> = () => {
     <>
       {open && (
         <div className="bg-neutral-800 w-[600px] h-screen overflow-auto pt-[60px] px-4 border-r border-l border-white/5">
-          <p className="text-white/80">Available Devices</p>
+          <p className="text-white/80">Presets</p>
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            <button
+              className="flex flex-col items-center gap-2 p-4 text-white/80 border border-neutral-700 rounded-md"
+              onClick={() => {
+                setDevices(defaultDevices.filter((d) => presetResponsive.includes(d.id)))
+              }}
+            >
+              <span className="text-xs">Responsive Check</span>
+              <span className="flex items-center gap-2">
+                <Smartphone width="20px" />
+                <Tablet width="20px" />
+                <Laptop width="20px" />
+              </span>
+            </button>
+          </div>
+          <p className="text-white/80 mt-12">Available Devices</p>
           <div className="grid grid-cols-2 gap-4 mt-6">
             {defaultDevices.map((device) => {
               return (
@@ -25,7 +41,7 @@ export const ToolbarSecondary: React.FC<ToolbarProps> = () => {
                   key={device.id}
                   className={cn(
                     'text-left flex items-center gap-2 py-2 text-white/80 border border-neutral-700 px-2 rounded-md',
-                    devices.find((d) => d.id === device.id) && 'bg-blue-700 border-blue-500'
+                    devices.find((d) => d.id === device.id) && 'bg-blue-800 border-blue-700'
                   )}
                   onClick={() => {
                     if (devices.find((d) => d.id === device.id)) {
@@ -46,7 +62,7 @@ export const ToolbarSecondary: React.FC<ToolbarProps> = () => {
                   </span>
                   <span className="text-sm">
                     {device.name}{' '}
-                    <span className="opacity-50 text-xs">
+                    <span className="opacity-50 text-xs block">
                       {device.width}x{device.height}
                     </span>
                   </span>

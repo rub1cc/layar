@@ -24,6 +24,8 @@ export interface Device {
   And `uuid` as id for custom devices
   */
 
+export const presetResponsive = ['10003', '10008', '10013', '10014', '10015']
+
 export const defaultDevices: Device[] = [
   {
     id: '10001',

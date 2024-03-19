@@ -138,7 +138,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
         {browserView === 'responsive' ? <CornersIcon /> : <DimensionsIcon />}
       </button>
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
           <button
             className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
             title="Device Alignment"

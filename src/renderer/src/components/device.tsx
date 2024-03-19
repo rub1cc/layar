@@ -75,14 +75,14 @@ export const Device: React.FC<DeviceProps> = (props) => {
         webview.removeEventListener('dom-ready', domReadyHandler)
       })
 
-      const didNavigate = (e: Electron.DidNavigateEvent): void => {
-        console.log('did-navigate', e.url)
+      const willNavigate = (e: Electron.WillNavigateEvent): void => {
         setUrl(e.url)
+        webview.stop()
       }
 
-      webview.addEventListener('did-navigate', didNavigate)
+      webview.addEventListener('will-navigate', willNavigate)
       handlerRemovers.push(() => {
-        webview.removeEventListener('did-navigate', didNavigate)
+        webview.removeEventListener('will-navigate', willNavigate)
       })
 
       const didStartLoading = (): void => {
@@ -204,6 +204,8 @@ export const Device: React.FC<DeviceProps> = (props) => {
           useragent={props.device.userAgent}
           /* eslint-disable-next-line react/no-unknown-property */
           preload={`file://${window.app.webviewPreloadPath}`}
+          /* eslint-disable-next-line react/no-unknown-property */
+          webpreferences="allowRunningInsecureContent=yes"
         />
 
         {error && (
