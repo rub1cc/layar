@@ -75,14 +75,13 @@ export const Device: React.FC<DeviceProps> = (props) => {
         webview.removeEventListener('dom-ready', domReadyHandler)
       })
 
-      const willNavigate = (e: Electron.WillNavigateEvent): void => {
+      const didNavigate = (e: Electron.WillNavigateEvent): void => {
         setUrl(e.url)
-        webview.stop()
       }
 
-      webview.addEventListener('will-navigate', willNavigate)
+      webview.addEventListener('did-navigate', didNavigate)
       handlerRemovers.push(() => {
-        webview.removeEventListener('will-navigate', willNavigate)
+        webview.removeEventListener('did-navigate', didNavigate)
       })
 
       const didStartLoading = (): void => {

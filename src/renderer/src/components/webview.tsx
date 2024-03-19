@@ -15,14 +15,13 @@ export const Webview: React.FC = () => {
       const webview = ref.current as Electron.WebviewTag
       const handlerRemovers: (() => void)[] = []
 
-      const willNavigate = (e: Electron.WillNavigateEvent): void => {
+      const didNavigate = (e: Electron.WillNavigateEvent): void => {
         setUrl(e.url)
-        webview.stop()
       }
 
-      webview.addEventListener('will-navigate', willNavigate)
+      webview.addEventListener('did-navigate', didNavigate)
       handlerRemovers.push(() => {
-        webview.removeEventListener('will-navigate', willNavigate)
+        webview.removeEventListener('did-navigate', didNavigate)
       })
 
       const didStartLoading = (): void => {
