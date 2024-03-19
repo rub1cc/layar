@@ -1,4 +1,4 @@
-import { deviceAlignmentAtom, urlAtom } from '@/lib/state'
+import { browserViewAtom, deviceAlignmentAtom, urlAtom } from '@/lib/state'
 import { cn, isValidURL } from '@/lib/utils'
 import {
   DropdownMenu,
@@ -11,6 +11,8 @@ import {
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  CornersIcon,
+  DimensionsIcon,
   GridIcon,
   HeightIcon,
   ReloadIcon,
@@ -42,6 +44,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
   const [url, setUrl] = useAtom(urlAtom)
   const inputRef = useRef<HTMLInputElement>(null)
   const [deviceAlignment, setDeviceAlignment] = useAtom(deviceAlignmentAtom)
+  const [browserView, setBrowserView] = useAtom(browserViewAtom)
 
   const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
@@ -90,7 +93,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 px-1.5 h-[44px] flex justify-between items-center gap-2 bg-neutral-800 border-b border-white/5">
+    <div className="fixed top-0 left-0 right-0 px-1.5 h-[40px] flex justify-between items-center gap-2 bg-neutral-800 border-b border-white/5 pl-[80px] drag">
       <div className="flex items-center">
         <button
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
@@ -127,6 +130,13 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
 
         <input type="submit" hidden />
       </form>
+      <button
+        className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+        title="Device Alignment"
+        onClick={() => setBrowserView((old) => (old === 'responsive' ? 'full' : 'responsive'))}
+      >
+        {browserView === 'responsive' ? <CornersIcon /> : <DimensionsIcon />}
+      </button>
       <DropdownMenu>
         <DropdownMenuTrigger>
           <button

@@ -12,6 +12,8 @@ function createWindow(): void {
     show: false,
     title: 'Layar',
     autoHideMenuBar: true,
+    titleBarStyle: 'hiddenInset',
+    transparent: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       devTools: is.dev,
@@ -22,6 +24,8 @@ function createWindow(): void {
       webSecurity: false
     }
   })
+
+  mainWindow.setMenuBarVisibility(false)
 
   ipcMain.handle('app-meta', () => {
     return {

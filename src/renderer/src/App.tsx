@@ -6,8 +6,9 @@ import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Device } from './components/device'
 import { ToolbarSecondary } from './components/toolbar-secondary'
+import { Webview } from './components/webview'
 import { ZoomIndicator } from './components/zoom-indicator'
-import { deviceAlignmentAtom, devicesAtom, urlAtom, zoomAtom } from './lib/state'
+import { browserViewAtom, deviceAlignmentAtom, devicesAtom, urlAtom, zoomAtom } from './lib/state'
 import { cn, isValidURL } from './lib/utils'
 
 function App(): JSX.Element {
@@ -17,6 +18,7 @@ function App(): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null)
   const setUrl = useSetAtom(urlAtom)
   const deviceAlignment = useAtomValue(deviceAlignmentAtom)
+  const browserView = useAtomValue(browserViewAtom)
 
   const registerShortcuts = (): void => {
     Mousetrap.reset()
@@ -77,29 +79,33 @@ function App(): JSX.Element {
 
   return (
     <div className="bg-neutral-900">
-      <ZoomIndicator />
+      {browserView === 'responsive' && <ZoomIndicator />}
       {createPortal(<Toolbar />, document.body)}
       <div className="flex flex-1">
         {url ? (
           <div
             className={cn(
-              'gap-8 p-4 pt-[56px] w-full h-screen overflow-auto',
+              'gap-8 pt-[40px] w-full h-screen overflow-auto',
+              browserView === 'responsive' && 'p-4 pt-[56px]',
               deviceAlignment === 'grid' && 'flex flex-wrap',
               deviceAlignment === 'horizontal' && 'flex flex-nowrap',
               deviceAlignment === 'vertical' && 'flex flex-col items-center'
             )}
           >
-            {url &&
+            {url && browserView === 'responsive' ? (
               devices.map((device) => {
                 return (
                   <div key={device.id}>
                     <Device device={device} />
                   </div>
                 )
-              })}
+              })
+            ) : (
+              <Webview />
+            )}
           </div>
         ) : (
-          <div className="flex justify-center items-center  p-4 pt-[56px] w-full h-screen overflow-auto">
+          <div className="flex justify-center items-center p-4 pt-[56px] w-full h-screen overflow-auto">
             <form onSubmit={handleSubmitForm} className="w-full max-w-[800px] relative">
               <span className="absolute left-0 top-0 bottom-0 w-14 flex justify-center items-center">
                 <Search className="text-white/80 w-5" />
@@ -118,7 +124,7 @@ function App(): JSX.Element {
             </form>
           </div>
         )}
-        <ToolbarSecondary />
+        {browserView === 'responsive' && <ToolbarSecondary />}
       </div>
     </div>
   )

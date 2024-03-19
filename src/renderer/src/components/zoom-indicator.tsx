@@ -10,7 +10,12 @@ export const ZoomIndicator: FC = () => {
   return (
     <>
       {createPortal(
-        <div className={cn('fixed bottom-4 left-4 text-white/80 flex items-center gap-2')}>
+        <div
+          className={cn(
+            'fixed bottom-4 left-4 text-white/80 flex items-center gap-2',
+            'bg-neutral-800 px-2 py-1 rounded-lg text-xs'
+          )}
+        >
           <button
             onClick={() => {
               setZoom((old) => {
@@ -22,9 +27,7 @@ export const ZoomIndicator: FC = () => {
             <MinusIcon className="w-4" />
             <span className="hidden">Zoom out</span>
           </button>
-          <span className={cn('bg-neutral-800 px-2 py-1 rounded-md text-xs')}>
-            {(zoom * 100).toFixed()}%
-          </span>
+          <span>{(zoom * 100).toFixed()}%</span>
           <button
             onClick={() => {
               setZoom((old) => {
