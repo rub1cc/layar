@@ -56,7 +56,7 @@ export const ToolbarSecondary: React.FC<ToolbarProps> = () => {
           </div>
         </div>
       )}
-      <div className="bg-neutral-800 w-8 pt-[60px]">
+      <div className="bg-neutral-800 w-8 pt-[52px]">
         <div className="flex transform rotate-90 gap-1">
           <button
             onClick={() => setOpen((old) => !old)}

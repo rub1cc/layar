@@ -1,6 +1,21 @@
-import { urlAtom } from '@/lib/state'
+import { deviceAlignmentAtom, urlAtom } from '@/lib/state'
+import { cn } from '@/lib/utils'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuTrigger
+} from '@radix-ui/react-dropdown-menu'
 
-import { ArrowLeftIcon, ArrowRightIcon, ReloadIcon } from '@radix-ui/react-icons'
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  GridIcon,
+  HeightIcon,
+  ReloadIcon,
+  WidthIcon
+} from '@radix-ui/react-icons'
 import { useAtom } from 'jotai'
 import { useRef } from 'react'
 
@@ -8,14 +23,32 @@ type ToolbarProps = {
   className?: string
 }
 
+const alignment = {
+  grid: {
+    label: 'Grid',
+    icon: <GridIcon />
+  },
+  horizontal: {
+    label: 'Horizontal',
+    icon: <WidthIcon />
+  },
+  vertical: {
+    label: 'Vertical',
+    icon: <HeightIcon />
+  }
+}
+
 export const Toolbar: React.FC<ToolbarProps> = () => {
   const [url, setUrl] = useAtom(urlAtom)
   const inputRef = useRef<HTMLInputElement>(null)
+  const [deviceAlignment, setDeviceAlignment] = useAtom(deviceAlignmentAtom)
 
   const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const url = formData.get('url') as string
+
+    if (!url) return
 
     let newAddress = url
     if (newAddress.indexOf('://') === -1) {
@@ -89,22 +122,38 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
 
         <input type="submit" hidden />
       </form>
-      {/* <Popover>
-        <PopoverTrigger>
-          <button className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed">
-            <DotsVerticalIcon />
-            <span className="hidden">Reload</span>
-          </button>
-        </PopoverTrigger>
-        <PopoverPortal>
-          <PopoverContent
-            align="end"
-            className="bg-neutral-800 border border-neutral-700 p-2 rounded-md text-white/80 shadow-xl text-sm"
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <button
+            className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+            title="Device Alignment"
           >
-            Open DevTools
-          </PopoverContent>
-        </PopoverPortal>
-      </Popover> */}
+            {alignment[deviceAlignment].icon}
+            <span className="hidden">{alignment[deviceAlignment].label}</span>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuPortal>
+          <DropdownMenuContent
+            align="end"
+            className="bg-neutral-800 border border-neutral-700 p-1 rounded-md text-white/80 shadow-xl text-sm space-y-1"
+          >
+            {Object.entries(alignment).map(([key, value]) => (
+              <DropdownMenuItem asChild key={key}>
+                <button
+                  className={cn(
+                    'px-2 py-1 hover:bg-neutral-700 rounded-md flex items-center gap-2 w-full',
+                    deviceAlignment === key && 'bg-neutral-700'
+                  )}
+                  onClick={() => setDeviceAlignment(key as unknown as keyof typeof alignment)}
+                >
+                  {value.icon}
+                  <span>{value.label}</span>
+                </button>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenuPortal>
+      </DropdownMenu>
     </div>
   )
 }
