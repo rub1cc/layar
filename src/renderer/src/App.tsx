@@ -22,6 +22,12 @@ function App(): JSX.Element {
 
   const registerShortcuts = (): void => {
     Mousetrap.reset()
+    Mousetrap.bind('mod+r', function () {
+      document.querySelectorAll('webview').forEach((webview: Element) => {
+        const wv = webview as Electron.WebviewTag
+        wv.reload()
+      })
+    })
     Mousetrap.bind('mod+l', function () {
       const el = document.getElementById('address-bar') as HTMLInputElement
       if (!el) return

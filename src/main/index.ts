@@ -2,7 +2,7 @@ import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { BrowserWindow, app, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
-import preload from '../preload/preload-webview.js?asset'
+import { initAppMetaHandlers } from './app-meta'
 
 function createWindow(): void {
   // Create the browser window.
@@ -27,11 +27,7 @@ function createWindow(): void {
 
   mainWindow.setMenuBarVisibility(false)
 
-  ipcMain.handle('app-meta', () => {
-    return {
-      webviewPreloadPath: preload
-    }
-  })
+  initAppMetaHandlers()
 
   mainWindow.on('ready-to-show', async () => {
     mainWindow.show()
