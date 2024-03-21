@@ -27,6 +27,13 @@ function createWindow(): void {
 
   mainWindow.setMenuBarVisibility(false)
 
+  mainWindow.on('app-command', () => {
+    mainWindow.on('new-window-for-tab', (e) => {
+      e.preventDefault()
+      mainWindow.webContents.loadURL(e.url)
+    })
+  })
+
   initAppMetaHandlers()
 
   mainWindow.on('ready-to-show', async () => {
