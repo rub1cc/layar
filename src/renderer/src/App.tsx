@@ -130,7 +130,7 @@ function App(): JSX.Element {
             </form>
           </div>
         )}
-        {browserView === 'responsive' && <ToolbarSecondary />}
+        <ToolbarSecondary />
       </div>
     </div>
   )

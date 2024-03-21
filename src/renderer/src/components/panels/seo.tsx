@@ -316,7 +316,7 @@ export const SEOPanel: FC = () => {
         <img
           src={getImage(metadata)}
           alt={metadata?.['title']}
-          className="w-full"
+          className="w-full object-cover"
           style={{
             aspectRatio: '527/273'
           }}

@@ -121,6 +121,7 @@ export const Device: React.FC<DeviceProps> = (props) => {
         webview.removeEventListener('did-fail-load', didFailLoadHandler)
       })
 
+      // watching all message that sent to host from webview
       webview.addEventListener('ipc-message', ipcMessageHandler)
       handlerRemovers.push(() => {
         webview.removeEventListener('ipc-message', ipcMessageHandler)

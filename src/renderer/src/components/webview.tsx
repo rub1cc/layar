@@ -71,10 +71,12 @@ export const Webview: React.FC = () => {
     <>
       <div className="bg-white origin-top-left relative w-full h-full">
         <webview
+          id="main-webview"
           ref={ref}
-          contextMenu="remote"
           src={url}
           className="origin-top-left w-full h-full"
+          /* eslint-disable-next-line react/no-unknown-property */
+          webpreferences="allowRunningInsecureContent=yes"
         />
 
         {error && (
