@@ -1,5 +1,5 @@
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { BrowserWindow, app, ipcMain, shell } from 'electron'
+import { BrowserWindow, app, ipcMain } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 import { initAppMetaHandlers } from './app-meta'
@@ -27,22 +27,10 @@ function createWindow(): void {
 
   mainWindow.setMenuBarVisibility(false)
 
-  mainWindow.on('app-command', () => {
-    mainWindow.on('new-window-for-tab', (e) => {
-      e.preventDefault()
-      mainWindow.webContents.loadURL(e.url)
-    })
-  })
-
   initAppMetaHandlers()
 
   mainWindow.on('ready-to-show', async () => {
     mainWindow.show()
-  })
-
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
   })
 
   // HMR for renderer base on electron-vite cli.
@@ -66,6 +54,13 @@ app.whenReady().then(() => {
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
+  })
+
+  app.on('web-contents-created', (_, contents) => {
+    contents.setWindowOpenHandler(({ url }) => {
+      contents.loadURL(url)
+      return { action: 'deny' }
+    })
   })
 
   // IPC test

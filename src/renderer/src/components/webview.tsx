@@ -75,6 +75,9 @@ export const Webview: React.FC = () => {
           ref={ref}
           src={url}
           className="origin-top-left w-full h-full"
+          // @ts-ignore need to pass a string for allowpopups
+          // eslint-disable-next-line react/no-unknown-property
+          allowpopups="true"
           /* eslint-disable-next-line react/no-unknown-property */
           webpreferences="allowRunningInsecureContent=yes"
         />
