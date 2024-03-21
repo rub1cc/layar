@@ -15,16 +15,17 @@ const cssPath = (el) => {
   return path.join(' > ')
 }
 
-window.addEventListener('scroll', () => {
+window.addEventListener('wheel', () => {
   ipcRenderer.sendToHost('scroll', {
     position: {
       x: window.scrollX,
       y: window.scrollY
-    }
+    },
+    deviceId: window.layarApp.deviceId
   })
 })
 
-window.addEventListener('click', (e) => {
+window.addEventListener('mousedown', (e) => {
   if (e.target === window.layarApp.lastClickElement) {
     window.layarApp.lastClickElement = null
     return

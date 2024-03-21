@@ -1,6 +1,6 @@
 import { defaultDevices, presetResponsive } from '@/lib/devices'
 import { devicesAtom } from '@/lib/state'
-import { cn } from '@/lib/utils'
+import { cn, generateRandomId } from '@/lib/utils'
 import { useAtom } from 'jotai'
 import { Laptop, Smartphone, Tablet } from 'lucide-react'
 import { FC } from 'react'
@@ -15,7 +15,11 @@ export const DevicesPanel: FC = () => {
         <button
           className="flex flex-col items-center gap-2 p-4 text-white/80 border border-neutral-700 rounded-md"
           onClick={() => {
-            setDevices(defaultDevices.filter((d) => presetResponsive.includes(d.id)))
+            setDevices(
+              defaultDevices
+                .filter((d) => presetResponsive.includes(d.code))
+                .map((d) => ({ ...d, id: generateRandomId() }))
+            )
           }}
         >
           <span className="text-xs">Responsive Check</span>
@@ -33,15 +37,16 @@ export const DevicesPanel: FC = () => {
             <button
               key={device.id}
               className={cn(
-                'text-left flex items-center gap-2 py-2 text-white/80 border border-neutral-700 px-2 rounded-md',
-                devices.find((d) => d.id === device.id) && 'bg-blue-800 border-blue-700'
+                'text-left flex items-center gap-2 py-2 text-white/80 border border-neutral-700 px-2 rounded-md'
               )}
               onClick={() => {
-                if (devices.find((d) => d.id === device.id)) {
-                  setDevices((old) => old.filter((d) => d.id !== device.id))
-                  return
-                }
-                setDevices((old) => [...old, device])
+                setDevices((old) => [
+                  ...old,
+                  {
+                    ...device,
+                    id: generateRandomId()
+                  }
+                ])
               }}
             >
               <span>

@@ -30,7 +30,10 @@ export const Device: React.FC<DeviceProps> = (props) => {
   const scaledWidth = width * zoom
   const scaledHeight = height * zoom
 
-  const ipcMessageHandler = ({ channel: type, args: [message] }: Electron.IpcMessageEvent) => {
+  const ipcMessageHandler = ({
+    channel: type,
+    args: [message]
+  }: Electron.IpcMessageEvent): void => {
     switch (type) {
       case 'scroll':
         pubsub.publish('scroll', [message])

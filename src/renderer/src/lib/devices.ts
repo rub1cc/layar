@@ -1,5 +1,6 @@
 export interface Device {
-  id: string
+  id?: string
+  code: string
   height: number
   width: number
   name: string
@@ -28,7 +29,7 @@ export const presetResponsive = ['10003', '10008', '10013', '10014', '10015']
 
 export const defaultDevices: Device[] = [
   {
-    id: '10001',
+    code: '10001',
     name: 'iPhone 4',
     width: 320,
     height: 480,
@@ -41,7 +42,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10002',
+    code: '10002',
     name: 'iPhone 5/SE',
     width: 320,
     height: 568,
@@ -54,7 +55,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10003',
+    code: '10003',
     name: 'iPhone SE',
     width: 375,
     height: 667,
@@ -67,7 +68,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10004',
+    code: '10004',
     name: 'iPhone 6/7/8',
     width: 375,
     height: 667,
@@ -80,7 +81,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10005',
+    code: '10005',
     name: 'iPhone 6/7/8 Plus',
     width: 414,
     height: 736,
@@ -93,7 +94,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10006',
+    code: '10006',
     name: 'iPhone X',
     width: 375,
     height: 812,
@@ -106,7 +107,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10007',
+    code: '10007',
     name: 'iPhone XR',
     width: 414,
     height: 896,
@@ -119,7 +120,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10008',
+    code: '10008',
     name: 'iPhone 12 Pro',
     width: 390,
     height: 844,
@@ -132,7 +133,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10009',
+    code: '10009',
     name: 'iPhone 13 Pro Max',
     width: 428,
     height: 926,
@@ -145,7 +146,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10010',
+    code: '10010',
     name: 'iPhone 14 Pro Max',
     width: 430,
     height: 932,
@@ -158,7 +159,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10011',
+    code: '10011',
     name: 'iPad Air',
     width: 820,
     height: 1180,
@@ -171,7 +172,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10012',
+    code: '10012',
     name: 'iPad Mini',
     width: 768,
     height: 1024,
@@ -184,7 +185,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10013',
+    code: '10013',
     name: 'iPad',
     width: 768,
     height: 1024,
@@ -197,7 +198,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10014',
+    code: '10014',
     name: 'iPad Pro',
     width: 1024,
     height: 1366,
@@ -210,7 +211,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10015',
+    code: '10015',
     name: 'MacBook Pro',
     width: 1440,
     height: 900,
@@ -223,7 +224,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: false
   },
   {
-    id: '10016',
+    code: '10016',
     name: 'iPhone 14',
     dpi: 3,
     width: 390,
@@ -236,7 +237,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10017',
+    code: '10017',
     name: 'iPhone 14 Plus',
     width: 428,
     height: 926,
@@ -249,7 +250,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '10018',
+    code: '10018',
     name: 'iPhone 14 Pro',
     width: 393,
     height: 852,
@@ -262,7 +263,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20001',
+    code: '20001',
     name: 'Nexus 4',
     width: 384,
     height: 640,
@@ -275,7 +276,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20002',
+    code: '20002',
     name: 'Nexus 5',
     width: 360,
     height: 640,
@@ -288,7 +289,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20003',
+    code: '20003',
     name: 'Nexus 5X',
     width: 412,
     height: 732,
@@ -301,7 +302,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20004',
+    code: '20004',
     name: 'Nexus 6',
     width: 412,
     height: 732,
@@ -314,7 +315,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20005',
+    code: '20005',
     name: 'Nexus 6P',
     width: 412,
     height: 732,
@@ -327,7 +328,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20006',
+    code: '20006',
     name: 'Nexus 7',
     width: 600,
     height: 960,
@@ -340,7 +341,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20007',
+    code: '20007',
     name: 'Nexus 10',
     width: 800,
     height: 1280,
@@ -353,7 +354,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20008',
+    code: '20008',
     name: 'Pixel 2',
     width: 411,
     height: 731,
@@ -366,7 +367,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20009',
+    code: '20009',
     name: 'Pixel 2 XL',
     width: 411,
     height: 823,
@@ -379,7 +380,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20010',
+    code: '20010',
     name: 'Pixel 3',
     width: 393,
     height: 786,
@@ -392,7 +393,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20011',
+    code: '20011',
     name: 'Pixel 3 XL',
     width: 393,
     height: 786,
@@ -405,7 +406,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20012',
+    code: '20012',
     name: 'Pixel 4',
     width: 353,
     height: 745,
@@ -418,7 +419,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20013',
+    code: '20013',
     name: 'Pixel 5',
     width: 393,
     height: 851,
@@ -431,7 +432,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20014',
+    code: '20014',
     name: 'Nest Hub Max',
     width: 1280,
     height: 800,
@@ -444,7 +445,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '20015',
+    code: '20015',
     name: 'Nest Hub',
     width: 1024,
     height: 600,
@@ -457,7 +458,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30001',
+    code: '30001',
     name: 'Samsung Galaxy S8+',
     width: 360,
     height: 740,
@@ -470,7 +471,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30002',
+    code: '30002',
     name: 'Samsung Galaxy S20 Ultra',
     width: 412,
     height: 915,
@@ -483,7 +484,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30003',
+    code: '30003',
     name: 'Galaxy Fold',
     width: 280,
     height: 653,
@@ -496,7 +497,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30004',
+    code: '30004',
     name: 'Galaxy S21',
     width: 360,
     height: 800,
@@ -509,7 +510,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30005',
+    code: '30005',
     name: 'Galaxy S21 Plus',
     width: 384,
     height: 854,
@@ -522,7 +523,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30006',
+    code: '30006',
     name: 'Galaxy S21 Ultra',
     width: 412,
     height: 915,
@@ -535,7 +536,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30007',
+    code: '30007',
     name: 'Galaxy S20',
     width: 360,
     height: 800,
@@ -548,7 +549,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30008',
+    code: '30008',
     name: 'Galaxy S20 Plus',
     width: 384,
     height: 854,
@@ -561,7 +562,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30009',
+    code: '30009',
     name: 'Samsung Galaxy A51/71',
     width: 412,
     height: 914,
@@ -574,7 +575,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30010',
+    code: '30010',
     name: 'Galaxy S III',
     width: 360,
     height: 640,
@@ -587,7 +588,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30011',
+    code: '30011',
     name: 'Galaxy S5',
     width: 360,
     height: 640,
@@ -600,7 +601,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30012',
+    code: '30012',
     name: 'Galaxy S8',
     width: 360,
     height: 740,
@@ -613,7 +614,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30013',
+    code: '30013',
     name: 'Galaxy S9+',
     width: 320,
     height: 658,
@@ -626,7 +627,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30014',
+    code: '30014',
     name: 'Galaxy Tab S4',
     width: 712,
     height: 1138,
@@ -639,7 +640,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30015',
+    code: '30015',
     name: 'Galaxy Note II',
     width: 360,
     height: 640,
@@ -652,7 +653,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30016',
+    code: '30016',
     name: 'Galaxy Note 3',
     width: 360,
     height: 640,
@@ -665,7 +666,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '30017',
+    code: '30017',
     name: 'Samsung S21 FE',
     width: 360,
     height: 800,
@@ -678,7 +679,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '40001',
+    code: '40001',
     name: 'Nokia Lumia 520',
     width: 320,
     height: 533,
@@ -691,7 +692,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '40002',
+    code: '40002',
     name: 'Microsoft Lumia 550',
     width: 640,
     height: 360,
@@ -704,7 +705,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '40003',
+    code: '40003',
     name: 'Microsoft Lumia 950',
     width: 360,
     height: 640,
@@ -717,7 +718,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '40004',
+    code: '40004',
     name: 'Surface Pro 7',
     width: 912,
     height: 1368,
@@ -730,7 +731,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '40005',
+    code: '40005',
     name: 'Surface Duo',
     width: 540,
     height: 720,
@@ -743,7 +744,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '50001',
+    code: '50001',
     name: 'BlackBerry Z30',
     width: 360,
     height: 640,
@@ -756,7 +757,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '50002',
+    code: '50002',
     name: 'LG Optimus L70',
     width: 384,
     height: 640,
@@ -769,7 +770,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '50003',
+    code: '50003',
     name: 'Nokia N9',
     width: 480,
     height: 854,
@@ -782,7 +783,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '50004',
+    code: '50004',
     name: 'JioPhone 2',
     width: 240,
     height: 320,
@@ -795,7 +796,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '50005',
+    code: '50005',
     name: 'Kindle Fire HDX',
     width: 800,
     height: 1280,
@@ -808,7 +809,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '50006',
+    code: '50006',
     name: 'Blackberry PlayBook',
     width: 600,
     height: 1024,
@@ -821,7 +822,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '50007',
+    code: '50007',
     name: 'Moto G4',
     width: 360,
     height: 640,
@@ -834,7 +835,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: true
   },
   {
-    id: '90001',
+    code: '90001',
     name: 'laptopWithTouch',
     width: 950,
     height: 1280,
@@ -847,7 +848,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: false
   },
   {
-    id: '90002',
+    code: '90002',
     name: 'laptopWithHiDPIScreen',
     width: 900,
     height: 1440,
@@ -860,7 +861,7 @@ export const defaultDevices: Device[] = [
     isMobileCapable: false
   },
   {
-    id: '90003',
+    code: '90003',
     name: 'laptopWithMDPIScreen',
     width: 800,
     height: 1280,
