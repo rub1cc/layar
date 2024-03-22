@@ -18,10 +18,8 @@ export const ZoomIndicator: FC = () => {
         >
           <button
             onClick={() => {
-              setZoom((old) => {
-                if (old <= 0.4) return old
-                return old - 0.1
-              })
+              if (zoom <= 0.4) return
+              setZoom(zoom - 0.1)
             }}
           >
             <MinusIcon className="w-4" />
@@ -30,10 +28,8 @@ export const ZoomIndicator: FC = () => {
           <span>{(zoom * 100).toFixed()}%</span>
           <button
             onClick={() => {
-              setZoom((old) => {
-                if (old >= 1.2) return old
-                return old + 0.1
-              })
+              if (zoom >= 1.2) return
+              setZoom(zoom + 0.1)
             }}
           >
             <PlusIcon className="w-4" />

@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from 'react'
 
 export const Webview: React.FC = () => {
   const ref = useRef<Electron.WebviewTag>(null)
-  const [loading, setLoading] = React.useState<boolean>(false)
   const [error, setError] = React.useState<{ code: number; description: string } | null>(null)
 
   const [url, setUrl] = useAtom(urlAtom)
@@ -25,22 +24,12 @@ export const Webview: React.FC = () => {
       })
 
       const didStartLoading = (): void => {
-        setLoading(true)
         setError(null)
       }
 
       webview.addEventListener('did-start-loading', didStartLoading)
       handlerRemovers.push(() => {
         webview.removeEventListener('did-start-loading', didStartLoading)
-      })
-
-      const didStopLoading = (): void => {
-        setLoading(false)
-      }
-
-      webview.addEventListener('did-stop-loading', didStopLoading)
-      handlerRemovers.push(() => {
-        webview.removeEventListener('did-stop-loading', didStopLoading)
       })
 
       const didFailLoadHandler = ({

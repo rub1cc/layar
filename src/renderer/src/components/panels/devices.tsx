@@ -40,8 +40,8 @@ export const DevicesPanel: FC = () => {
                 'text-left flex items-center gap-2 py-2 text-white/80 border border-neutral-700 px-2 rounded-md'
               )}
               onClick={() => {
-                setDevices((old) => [
-                  ...old,
+                setDevices([
+                  ...devices,
                   {
                     ...device,
                     id: generateRandomId()

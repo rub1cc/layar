@@ -1,18 +1,56 @@
-import { atom } from 'jotai'
-import { Device, defaultDevices } from './devices'
+import { StoreSchema } from '@/shared/types'
+import { WritableAtom, atom } from 'jotai'
+import { defaultDevices } from './devices'
 
-export const zoomAtom = atom<number>(1)
+const persistAtom = <K extends keyof StoreSchema>(
+  key: K,
+  initialValue?: StoreSchema[K]
+): WritableAtom<StoreSchema[K], [update: StoreSchema[K]], void> => {
+  const getInitialValue = (): StoreSchema[K] => {
+    return window.api.store.get(key)
+  }
+  const baseAtom = atom(getInitialValue() ?? initialValue)
+  const derivedAtom = atom(
+    (get) => get(baseAtom),
+    (get, set, update) => {
+      const nextValue = typeof update === 'function' ? update(get(baseAtom)) : update
+      set(baseAtom, nextValue)
+      window.api.store.set(key, nextValue)
+    }
+  )
+  return derivedAtom
+}
 
-export const urlAtom = atom<string>('')
+/**
+ * atom for handling zoom level
+ * of the responsive view
+ */
+export const zoomAtom = persistAtom('zoom')
 
-export const devicesAtom = atom<Device[]>(
+/**
+ * atom for handling the address bar
+ */
+export const urlAtom = persistAtom('url')
+
+/**
+ * atom for handling the devices
+ */
+export const devicesAtom = persistAtom(
+  'devices',
   defaultDevices.filter((d) => ['10003'].includes(d.code))
-  // defaultDevices.filter((d) => ['10003', '10008', '10013', '10014', '10015'].includes(d.id))
 )
 
+/**
+ * atom for handling the alignment of the devices
+ */
+export const deviceAlignmentAtom = persistAtom('devicesAlignment')
+
+/**
+ * atom for handling what is displayed in the right panel
+ */
 export const rightPanelAtom = atom<'devices' | 'seo' | null>(null)
 
-export const hoveredDeviceAtom = atom<string | null>(null)
-
-export const browserViewAtom = atom<'full' | 'responsive'>('full')
-export const deviceAlignmentAtom = atom<'grid' | 'horizontal' | 'vertical'>('grid')
+/**
+ * atom for handling the browser view
+ */
+export const browserViewAtom = persistAtom('browserView')

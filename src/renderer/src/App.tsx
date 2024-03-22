@@ -1,5 +1,5 @@
 import { Toolbar } from '@/components/toolbar'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Search } from 'lucide-react'
 import Mousetrap from 'mousetrap'
 import { useEffect, useRef } from 'react'
@@ -13,7 +13,7 @@ import { cn, isValidURL } from './lib/utils'
 
 function App(): JSX.Element {
   const url = useAtomValue(urlAtom)
-  const setZoom = useSetAtom(zoomAtom)
+  const [zoom, setZoom] = useAtom(zoomAtom)
   const devices = useAtomValue(devicesAtom)
   const inputRef = useRef<HTMLInputElement>(null)
   const setUrl = useSetAtom(urlAtom)
@@ -38,16 +38,12 @@ function App(): JSX.Element {
       setZoom(0.5)
     })
     Mousetrap.bind('mod+-', function () {
-      setZoom((old) => {
-        if (old <= 0.4) return old
-        return old - 0.1
-      })
+      if (zoom <= 0.4) return
+      setZoom(zoom - 0.1)
     })
     Mousetrap.bind('mod+=', function () {
-      setZoom((old) => {
-        if (old >= 1.2) return old
-        return old + 0.1
-      })
+      if (zoom >= 1.2) return
+      setZoom(zoom + 0.1)
     })
   }
 

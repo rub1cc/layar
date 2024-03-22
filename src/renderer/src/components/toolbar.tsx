@@ -133,7 +133,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
       <button
         className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
         title="Device Alignment"
-        onClick={() => setBrowserView((old) => (old === 'responsive' ? 'full' : 'responsive'))}
+        onClick={() => setBrowserView(browserView === 'responsive' ? 'full' : 'responsive')}
       >
         {browserView === 'responsive' ? <CornersIcon /> : <DimensionsIcon />}
       </button>

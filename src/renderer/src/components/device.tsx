@@ -1,8 +1,8 @@
-import { Device as IDevice } from '@/lib/devices'
 import { devicesAtom, urlAtom, zoomAtom } from '@/lib/state'
 import { cn } from '@/lib/utils'
+import { Device as IDevice } from '@/shared/types'
 import { RotateCounterClockwiseIcon } from '@radix-ui/react-icons'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { RefreshCcw, TerminalSquare, Trash2Icon } from 'lucide-react'
 import pubsub from 'pubsub.js'
 import React, { useEffect, useRef } from 'react'
@@ -18,7 +18,7 @@ export const Device: React.FC<DeviceProps> = (props) => {
   const [error, setError] = React.useState<{ code: number; description: string } | null>(null)
 
   const [url, setUrl] = useAtom(urlAtom)
-  const setDevices = useSetAtom(devicesAtom)
+  const [devices, setDevices] = useAtom(devicesAtom)
   const zoom = useAtomValue(zoomAtom)
 
   let { width, height } = props.device
@@ -176,14 +176,16 @@ export const Device: React.FC<DeviceProps> = (props) => {
             <TerminalSquare className="w-4 text-white/50 hover:text-white" />
             <span className="hidden">Devtools</span>
           </button>
-          <button
-            onClick={() => {
-              setDevices((old) => old.filter((d) => d.id !== props.device.id))
-            }}
-          >
-            <Trash2Icon className="w-4 text-white/50 hover:text-white" />
-            <span className="hidden">Remove</span>
-          </button>
+          {devices.length > 1 && (
+            <button
+              onClick={() => {
+                setDevices(devices.filter((d) => d.id !== props.device.id))
+              }}
+            >
+              <Trash2Icon className="w-4 text-white/50 hover:text-white" />
+              <span className="hidden">Remove</span>
+            </button>
+          )}
         </div>
       </div>
       <div
