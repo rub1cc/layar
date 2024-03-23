@@ -23,6 +23,10 @@ const schema: Store.Schema<StoreSchema> = {
     type: 'string',
     enum: ['full', 'responsive'],
     default: 'full'
+  },
+  history: {
+    type: 'array',
+    default: []
   }
 }
 

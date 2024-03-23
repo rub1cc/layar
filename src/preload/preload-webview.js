@@ -15,6 +15,14 @@ const cssPath = (el) => {
   return path.join(' > ')
 }
 
+// handle modifier + l to focus on the address bar
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'l' && e.metaKey) {
+    e.preventDefault()
+    ipcRenderer.sendToHost('focusAddressBar')
+  }
+})
+
 window.addEventListener('wheel', () => {
   ipcRenderer.sendToHost('scroll', {
     position: {

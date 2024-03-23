@@ -54,3 +54,21 @@ export const rightPanelAtom = atom<'devices' | 'seo' | null>(null)
  * atom for handling the browser view
  */
 export const browserViewAtom = persistAtom('browserView')
+
+/**
+ * atom for handling the show address bar
+ */
+export const searchingAtom = atom(false)
+
+export const historyAtom = persistAtom('history')
+
+export const updateHistoryAtom = atom(null, (get, set, update: { url: string; label: string }) => {
+  const updatedHistory = [
+    {
+      url: update.url,
+      label: update.label
+    },
+    ...get(historyAtom).filter((h) => h.url !== update.url)
+  ]
+  set(historyAtom, updatedHistory)
+})

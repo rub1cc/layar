@@ -36,3 +36,13 @@ export function generateRandomId(length: number = 5): string {
   }
   return result
 }
+
+export function getFavicon(url: string): string {
+  return `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}`
+}
+
+export function addHistory(url: string, label: string): void {
+  const history = window.api.store.get('history')
+  const newHistory = [{ url, label }, ...history.filter((h) => h.url !== url)]
+  window.api.store.set('history', newHistory)
+}

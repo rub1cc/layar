@@ -1,12 +1,25 @@
-import { urlAtom } from '@/lib/state'
-import { useAtom } from 'jotai'
-import React, { useEffect, useRef } from 'react'
+import { searchingAtom, updateHistoryAtom, urlAtom } from '@/lib/state'
+import { useAtom, useSetAtom } from 'jotai'
+import { FC, useEffect, useRef, useState } from 'react'
 
-export const Webview: React.FC = () => {
+export const Webview: FC = () => {
   const ref = useRef<Electron.WebviewTag>(null)
-  const [error, setError] = React.useState<{ code: number; description: string } | null>(null)
+  const [error, setError] = useState<{ code: number; description: string } | null>(null)
+  const setSearching = useSetAtom(searchingAtom)
 
   const [url, setUrl] = useAtom(urlAtom)
+  const updateHistory = useSetAtom(updateHistoryAtom)
+
+  const ipcMessageHandler = ({
+    channel: type,
+    args: [message]
+  }: Electron.IpcMessageEvent): void => {
+    switch (type) {
+      case 'focusAddressBar':
+        setSearching(true)
+        return
+    }
+  }
 
   // @ts-ignore temporarily
   useEffect(() => {
@@ -16,6 +29,7 @@ export const Webview: React.FC = () => {
 
       const didNavigate = (e: Electron.WillNavigateEvent): void => {
         setUrl(e.url)
+        updateHistory({ url: webview.getURL(), label: webview.getTitle() })
       }
 
       webview.addEventListener('did-navigate', didNavigate)
@@ -50,6 +64,12 @@ export const Webview: React.FC = () => {
         webview.removeEventListener('did-fail-load', didFailLoadHandler)
       })
 
+      // watching all message that sent to host from webview
+      webview.addEventListener('ipc-message', ipcMessageHandler)
+      handlerRemovers.push(() => {
+        webview.removeEventListener('ipc-message', ipcMessageHandler)
+      })
+
       return () => {
         handlerRemovers.forEach((remove) => remove())
       }
@@ -69,6 +89,8 @@ export const Webview: React.FC = () => {
           allowpopups="true"
           /* eslint-disable-next-line react/no-unknown-property */
           webpreferences="allowRunningInsecureContent=yes"
+          /* eslint-disable-next-line react/no-unknown-property */
+          preload={`file://${window.app.webviewPreloadPath}`}
         />
 
         {error && (

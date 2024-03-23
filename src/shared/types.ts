@@ -1,9 +1,10 @@
 export type StoreSchema = {
   url: string
   zoom: number
-  devices: Device[]
+  devices: Array<Device>
   devicesAlignment: 'grid' | 'horizontal' | 'vertical'
   browserView: 'full' | 'responsive'
+  history: Array<{ url: string; label: string }>
 }
 
 export interface Device {

@@ -1,5 +1,5 @@
-import { browserViewAtom, deviceAlignmentAtom, urlAtom } from '@/lib/state'
-import { cn, isValidURL } from '@/lib/utils'
+import { browserViewAtom, deviceAlignmentAtom, searchingAtom, urlAtom } from '@/lib/state'
+import { cn } from '@/lib/utils'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,8 +18,7 @@ import {
   ReloadIcon,
   WidthIcon
 } from '@radix-ui/react-icons'
-import { useAtom } from 'jotai'
-import { useRef } from 'react'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 
 type ToolbarProps = {
   className?: string
@@ -41,38 +40,10 @@ const alignment = {
 }
 
 export const Toolbar: React.FC<ToolbarProps> = () => {
-  const [url, setUrl] = useAtom(urlAtom)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const url = useAtomValue(urlAtom)
   const [deviceAlignment, setDeviceAlignment] = useAtom(deviceAlignmentAtom)
   const [browserView, setBrowserView] = useAtom(browserViewAtom)
-
-  const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    const url = formData.get('url') as string
-
-    if (!url) return
-
-    if (!isValidURL(url)) {
-      setUrl('https://google.com/search?q=' + url)
-      return
-    }
-
-    let newAddress = url
-    if (newAddress.indexOf('://') === -1) {
-      let protocol = 'https://'
-      if (url.indexOf('localhost') !== -1 || url.indexOf('127.0.0.1') !== -1) {
-        protocol = 'http://'
-      }
-      newAddress = protocol + url
-    }
-
-    if (inputRef.current) {
-      inputRef.current.blur()
-      inputRef.current.value = newAddress
-    }
-    setUrl(newAddress)
-  }
+  const setSearching = useSetAtom(searchingAtom)
 
   const handleGoBack = (): void => {
     document.querySelectorAll('webview').forEach((webview: Element) => {
@@ -117,19 +88,13 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
           <span className="hidden">Reload</span>
         </button>
       </div>
-      <form onSubmit={handleSubmitForm} className="w-full">
-        <input
-          id="address-bar"
-          key={url}
-          ref={inputRef}
-          name="url"
-          defaultValue={url}
-          placeholder="Search or enter website address"
-          className="rounded-lg bg-neutral-900/50 border border-neutral-700 text-white/80 border-transparent text-xs w-full p-2"
-        />
+      <div
+        onClick={() => setSearching(true)}
+        className="rounded-lg bg-neutral-900/50 border border-neutral-700 text-white/80 border-transparent text-xs w-full p-2 text-center line-clamp-1"
+      >
+        {(url && new URL(url).hostname) || 'Search or enter website address'}
+      </div>
 
-        <input type="submit" hidden />
-      </form>
       <button
         className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
         title="Device Alignment"

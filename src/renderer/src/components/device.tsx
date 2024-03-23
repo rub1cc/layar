@@ -1,25 +1,26 @@
-import { devicesAtom, urlAtom, zoomAtom } from '@/lib/state'
+import { devicesAtom, updateHistoryAtom, urlAtom, zoomAtom } from '@/lib/state'
 import { cn } from '@/lib/utils'
 import { Device as IDevice } from '@/shared/types'
 import { RotateCounterClockwiseIcon } from '@radix-ui/react-icons'
-import { useAtom, useAtomValue } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { RefreshCcw, TerminalSquare, Trash2Icon } from 'lucide-react'
 import pubsub from 'pubsub.js'
-import React, { useEffect, useRef } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 
 type DeviceProps = {
   device: IDevice
 }
 
-export const Device: React.FC<DeviceProps> = (props) => {
+export const Device: FC<DeviceProps> = (props) => {
   const ref = useRef<Electron.WebviewTag>(null)
-  const [rotated, setRotated] = React.useState<boolean>(false)
-  const [loading, setLoading] = React.useState<boolean>(false)
-  const [error, setError] = React.useState<{ code: number; description: string } | null>(null)
+  const [rotated, setRotated] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<{ code: number; description: string } | null>(null)
 
   const [url, setUrl] = useAtom(urlAtom)
   const [devices, setDevices] = useAtom(devicesAtom)
   const zoom = useAtomValue(zoomAtom)
+  const updateHistory = useSetAtom(updateHistoryAtom)
 
   let { width, height } = props.device
 
@@ -80,6 +81,7 @@ export const Device: React.FC<DeviceProps> = (props) => {
 
       const didNavigate = (e: Electron.WillNavigateEvent): void => {
         setUrl(e.url)
+        updateHistory({ url: webview.getURL(), label: webview.getTitle() })
       }
 
       webview.addEventListener('did-navigate', didNavigate)

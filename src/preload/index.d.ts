@@ -1,3 +1,4 @@
+import { StoreSchema } from '@/shared/types'
 import { ElectronAPI } from '@electron-toolkit/preload'
 
 declare global {

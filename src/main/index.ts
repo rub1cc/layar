@@ -13,6 +13,11 @@ function createWindow(): void {
     title: 'Layar',
     autoHideMenuBar: true,
     titleBarStyle: 'hiddenInset',
+    minWidth: 800,
+    minHeight: 600,
+    minimizable: true,
+    maximizable: true,
+    closable: true,
     transparent: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
@@ -26,8 +31,9 @@ function createWindow(): void {
   })
 
   mainWindow.setMenuBarVisibility(false)
+  mainWindow.maximize()
 
-  initAppMetaHandlers()
+  initAppMetaHandlers(mainWindow)
 
   mainWindow.on('ready-to-show', async () => {
     mainWindow.show()
