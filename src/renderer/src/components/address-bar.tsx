@@ -83,36 +83,34 @@ const SuggestionList: FC = () => {
         className="w-full p-4 text-2xl bg-transparent text-white/80 placeholder:text-neutral-600 outline-none"
         onChange={(e) => setInput(e.currentTarget.value)}
       />
-      {list.length > 0 && (
-        <Combobox.Options
-          static
-          className="border-t border-neutral-700/30 py-4 overflow-auto max-h-[284px]"
-        >
-          {input && (
-            <Combobox.Option
-              value={input}
-              className="p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4"
-            >
-              <span>
-                <Search className="w-4 h-4" />
-              </span>
-              <span className="line-clamp-1">{input}</span>
-            </Combobox.Option>
-          )}
-          {list.slice(0, 5).map((suggestion) => (
-            <Combobox.Option
-              key={suggestion.label}
-              value={suggestion.url}
-              className="p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4"
-            >
-              <img src={getFavicon(suggestion.url)} className="w-4 h-4" alt="favicon" />
-              <span className="line-clamp-1">
-                {suggestion.label} <span className="text-white/30">- {suggestion.url}</span>
-              </span>
-            </Combobox.Option>
-          ))}
-        </Combobox.Options>
-      )}
+      <Combobox.Options
+        static
+        className="border-t border-neutral-700/30 py-4 overflow-auto max-h-[284px]"
+      >
+        {input && (
+          <Combobox.Option
+            value={input}
+            className="p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4"
+          >
+            <span>
+              <Search className="w-4 h-4" />
+            </span>
+            <span className="line-clamp-1">{input}</span>
+          </Combobox.Option>
+        )}
+        {list.slice(0, 5).map((suggestion) => (
+          <Combobox.Option
+            key={suggestion.label}
+            value={suggestion.url}
+            className="p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4"
+          >
+            <img src={getFavicon(suggestion.url)} className="w-4 h-4" alt="favicon" />
+            <span className="line-clamp-1">
+              {suggestion.label} <span className="text-white/30">- {suggestion.url}</span>
+            </span>
+          </Combobox.Option>
+        ))}
+      </Combobox.Options>
     </Combobox>
   )
 }
