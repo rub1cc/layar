@@ -1,9 +1,8 @@
 import { historyAtom, searchingAtom, urlAtom } from '@/lib/state'
 import { cn, getFavicon, isValidURL } from '@/lib/utils'
-import { Combobox } from '@headlessui/react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Search } from 'lucide-react'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 const DEFAULT_SEARCH = [
   {
@@ -16,24 +15,28 @@ const DEFAULT_SEARCH = [
   }
 ]
 
-const SuggestionList: FC = () => {
+interface SuggestionListProps {
+  input: string
+}
+
+const SuggestionList: FC<SuggestionListProps> = (props) => {
   const [url, setUrl] = useAtom(urlAtom)
   const setSearching = useSetAtom(searchingAtom)
-  const [input, setInput] = useState<string>(url)
   const inputRef = useRef<HTMLInputElement>(null)
   const history = useAtomValue(historyAtom)
+  const [activeIndex, setActiveIndex] = useState(-1)
 
-  const list = useMemo(() => {
-    if (input) {
+  const suggestions = useMemo(() => {
+    if (props.input) {
       return history.filter((item) =>
-        `${item.label} ${item.url}`.toLocaleLowerCase().includes(input.toLocaleLowerCase())
+        `${item.label} ${item.url}`.toLocaleLowerCase().includes(props.input.toLocaleLowerCase())
       )
     }
 
     return DEFAULT_SEARCH
-  }, [input, url])
+  }, [props.input, url])
 
-  const handleSearch = (url: string): void => {
+  const searchUrl = (url: string): void => {
     if (!url) return
 
     if (!isValidURL(url)) {
@@ -59,63 +62,100 @@ const SuggestionList: FC = () => {
     setSearching(false)
   }
 
-  useEffect(() => {
-    const keydownHandler = (e: KeyboardEvent): void => {
-      if (e.key === 'Tab') {
-        alert('TAB')
-        e.preventDefault()
+  const keydownHandler = useCallback(
+    (e: KeyboardEvent): void => {
+      if (e.key === 'Enter') {
+        if (activeIndex === -1) {
+          searchUrl(props.input)
+        } else {
+          searchUrl(suggestions[activeIndex].url)
+        }
       }
-    }
 
+      if (e.key === 'ArrowDown') {
+        if (activeIndex === suggestions.length - 1) return
+        const nextId = activeIndex + 1
+        setActiveIndex(nextId)
+
+        document.getElementById(`suggestion${nextId}`)?.scrollIntoView({
+          block: 'center',
+          inline: 'center',
+          behavior: 'smooth'
+        })
+
+        const inputEl = document.getElementById('address-bar-input') as HTMLInputElement
+        if (inputEl) {
+          inputEl.value = nextId == -1 ? props.input : suggestions[nextId].url
+          inputEl.select()
+        }
+      }
+
+      if (e.key === 'ArrowUp') {
+        if (activeIndex === -1) return
+        const nextId = activeIndex - 1
+        setActiveIndex(nextId)
+
+        document.getElementById(`suggestion${nextId}`)?.scrollIntoView({
+          block: 'center',
+          inline: 'center',
+          behavior: 'smooth'
+        })
+        const inputEl = document.getElementById('address-bar-input') as HTMLInputElement
+        if (inputEl) {
+          inputEl.value = nextId == -1 ? props.input : suggestions[nextId].url
+          inputEl.select()
+        }
+      }
+    },
+    [activeIndex, suggestions, searchUrl]
+  )
+
+  useEffect(() => {
     window.addEventListener('keydown', keydownHandler)
 
     return () => {
       window.removeEventListener('keydown', keydownHandler)
     }
-  }, [])
+  }, [keydownHandler])
 
   return (
-    <Combobox value={input} onChange={handleSearch}>
-      <Combobox.Input
-        autoFocus
-        onFocus={(e) => e.currentTarget.select()}
-        placeholder="Search or enter website address"
-        className="w-full p-4 text-2xl bg-transparent text-white/80 placeholder:text-neutral-600 outline-none"
-        onChange={(e) => setInput(e.currentTarget.value)}
-      />
-      <Combobox.Options
-        static
-        className="border-t border-neutral-700/30 py-4 overflow-auto max-h-[284px]"
-      >
-        {input && (
-          <Combobox.Option
-            value={input}
-            className="p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4"
-          >
-            <span>
-              <Search className="w-4 h-4" />
-            </span>
-            <span className="line-clamp-1">{input}</span>
-          </Combobox.Option>
-        )}
-        {list.slice(0, 5).map((suggestion) => (
-          <Combobox.Option
-            key={suggestion.label}
-            value={suggestion.url}
-            className="p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4"
-          >
-            <img src={getFavicon(suggestion.url)} className="w-4 h-4" alt="favicon" />
-            <span className="line-clamp-1">
-              {suggestion.label} <span className="text-white/30">- {suggestion.url}</span>
-            </span>
-          </Combobox.Option>
-        ))}
-      </Combobox.Options>
-    </Combobox>
+    <div className="border-t border-neutral-700/30 py-4 overflow-auto max-h-[284px]">
+      {props.input && (
+        <div
+          id={`suggestion-1`}
+          className={cn(
+            'p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4',
+            activeIndex === -1 ? 'bg-blue-700 hover:bg-blue-700' : ''
+          )}
+        >
+          <span>
+            <Search className="w-4 h-4" />
+          </span>
+          <span className="line-clamp-1">{props.input}</span>
+        </div>
+      )}
+      {suggestions.map((suggestion, index) => (
+        <div
+          id={`suggestion${index}`}
+          key={`suggestion${index}`}
+          className={cn(
+            'p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4',
+            activeIndex === index ? 'bg-blue-700 hover:bg-blue-700' : ''
+          )}
+        >
+          <img src={getFavicon(suggestion.url)} className="w-4 h-4" alt="favicon" />
+          <span className="line-clamp-1">
+            {suggestion.label} <span className="text-white/30">- {suggestion.url}</span>
+          </span>
+        </div>
+      ))}
+    </div>
   )
 }
 
 export const AddressBar: FC = () => {
+  const [input, setInput] = useState('')
+  const url = useAtomValue(urlAtom)
   const setSearching = useSetAtom(searchingAtom)
 
   useEffect(() => {
@@ -142,7 +182,23 @@ export const AddressBar: FC = () => {
             'bg-neutral-800 border border-neutral-700 px-2 rounded-xl shadow-xl text-sm'
           )}
         >
-          <SuggestionList />
+          <input
+            autoFocus
+            id="address-bar-input"
+            defaultValue={url}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault()
+                document.getElementById('address-bar-input')?.blur()
+                document.getElementById('address-bar-input')?.focus()
+              }
+            }}
+            onFocus={(e) => e.currentTarget.select()}
+            placeholder="Search or enter website address"
+            className="w-full p-4 text-2xl bg-transparent text-white/80 placeholder:text-neutral-600 outline-none"
+            onChange={(e) => setInput(e.currentTarget.value)}
+          />
+          <SuggestionList key={input} input={input} />
         </div>
       </div>
     </div>
