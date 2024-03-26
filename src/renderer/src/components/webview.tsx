@@ -10,10 +10,7 @@ export const Webview: FC = () => {
   const [url, setUrl] = useAtom(urlAtom)
   const updateHistory = useSetAtom(updateHistoryAtom)
 
-  const ipcMessageHandler = ({
-    channel: type,
-    args: [message]
-  }: Electron.IpcMessageEvent): void => {
+  const ipcMessageHandler = ({ channel: type }: Electron.IpcMessageEvent): void => {
     switch (type) {
       case 'focusAddressBar':
         setSearching(true)

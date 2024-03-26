@@ -21,7 +21,7 @@ export const initAppMetaHandlers = (win: BrowserWindow): void => {
   })
 
   win.on('close', function (e) {
-    const response = dialog.showMessageBoxSync(this, {
+    const response = dialog.showMessageBoxSync(win, {
       type: 'question',
       buttons: ['Yes', 'No'],
       title: 'Confirm',
