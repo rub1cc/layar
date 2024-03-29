@@ -8,17 +8,17 @@ import {
   DropdownMenuTrigger
 } from '@radix-ui/react-dropdown-menu'
 
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  CornersIcon,
-  DimensionsIcon,
-  GridIcon,
-  HeightIcon,
-  ReloadIcon,
-  WidthIcon
-} from '@radix-ui/react-icons'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import {
+  ArrowLeft,
+  ArrowRight,
+  Expand,
+  GalleryHorizontal,
+  GalleryVertical,
+  Grid2X2,
+  MonitorSmartphone,
+  RotateCw
+} from 'lucide-react'
 
 type ToolbarProps = {
   className?: string
@@ -27,15 +27,15 @@ type ToolbarProps = {
 const alignment = {
   grid: {
     label: 'Grid',
-    icon: <GridIcon />
+    icon: <Grid2X2 className="w-4 h-4" />
   },
   horizontal: {
     label: 'Horizontal',
-    icon: <WidthIcon />
+    icon: <GalleryHorizontal className="w-4 h-4" />
   },
   vertical: {
     label: 'Vertical',
-    icon: <HeightIcon />
+    icon: <GalleryVertical className="w-4 h-4" />
   }
 }
 
@@ -70,21 +70,21 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
           onClick={handleGoBack}
         >
-          <ArrowLeftIcon />
+          <ArrowLeft className="w-4 h-4" />
           <span className="hidden">Go back</span>
         </button>
         <button
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
           onClick={handleGoForward}
         >
-          <ArrowRightIcon />
+          <ArrowRight className="w-4 h-4" />
           <span className="hidden">Go forward</span>
         </button>
         <button
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
           onClick={handleReloadWebview}
         >
-          <ReloadIcon />
+          <RotateCw className="w-4 h-4" />
           <span className="hidden">Reload</span>
         </button>
       </div>
@@ -100,7 +100,11 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
         title="Device Alignment"
         onClick={() => setBrowserView(browserView === 'responsive' ? 'full' : 'responsive')}
       >
-        {browserView === 'responsive' ? <CornersIcon /> : <DimensionsIcon />}
+        {browserView === 'responsive' ? (
+          <Expand className="w-4 h-4" />
+        ) : (
+          <MonitorSmartphone className="w-4 h-4" />
+        )}
       </button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

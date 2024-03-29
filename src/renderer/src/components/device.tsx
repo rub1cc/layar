@@ -1,9 +1,8 @@
 import { devicesAtom, updateHistoryAtom, urlAtom, zoomAtom } from '@/lib/state'
 import { cn } from '@/lib/utils'
 import { Device as IDevice } from '@/shared/types'
-import { RotateCounterClockwiseIcon } from '@radix-ui/react-icons'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { RefreshCcw, TerminalSquare, Trash2Icon } from 'lucide-react'
+import { RefreshCcw, Smartphone, TerminalSquare, Trash2Icon } from 'lucide-react'
 import pubsub from 'pubsub.js'
 import { FC, useEffect, useRef, useState } from 'react'
 
@@ -167,12 +166,18 @@ export const Device: FC<DeviceProps> = (props) => {
               setRotated((old) => !old)
             }}
           >
-            <RotateCounterClockwiseIcon className="w-4 text-white/50 hover:text-white" />
+            {width > height ? (
+              <Smartphone className="w-4 text-white/50 hover:text-white transform rotate-90" />
+            ) : (
+              <Smartphone className="w-4 text-white/50 hover:text-white" />
+            )}
             <span className="hidden">Rotate</span>
           </button>
           <button
             onClick={() => {
-              ref?.current?.openDevTools()
+              window.electron.ipcRenderer.invoke('open-devtools', {
+                webviewId: ref.current?.getWebContentsId()
+              })
             }}
           >
             <TerminalSquare className="w-4 text-white/50 hover:text-white" />
@@ -213,6 +218,9 @@ export const Device: FC<DeviceProps> = (props) => {
           preload={`file://${window.app.webviewPreloadPath}`}
           /* eslint-disable-next-line react/no-unknown-property */
           webpreferences="allowRunningInsecureContent=yes"
+          // @ts-ignore need to pass a string for allowpopups
+          // eslint-disable-next-line react/no-unknown-property
+          nodeintegration="true"
         />
 
         {error && (

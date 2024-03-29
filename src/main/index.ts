@@ -26,7 +26,8 @@ function createWindow(): void {
       sandbox: false,
       webviewTag: true,
       allowRunningInsecureContent: true,
-      webSecurity: false
+      webSecurity: false,
+      nodeIntegration: true
     }
   })
 

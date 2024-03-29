@@ -60,8 +60,10 @@ export const browserViewAtom = persistAtom('browserView')
  */
 export const searchingAtom = atom(false)
 
+/**
+ * atom for handling the history
+ */
 export const historyAtom = persistAtom('history')
-
 export const updateHistoryAtom = atom(null, (get, set, update: { url: string; label: string }) => {
   const updatedHistory = [
     {

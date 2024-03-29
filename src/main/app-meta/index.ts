@@ -1,27 +1,51 @@
 import { BrowserWindow, dialog, ipcMain } from 'electron'
 import preload from '../../preload/preload-webview.js?asset'
+import { StoreSchema } from '../../shared/types'
 import { store } from '../store'
 
-export const initAppMetaHandlers = (win: BrowserWindow): void => {
+interface AppMetaResponse {
+  webviewPreloadPath: string
+}
+
+const handleAppMeta = (): AppMetaResponse => {
+  return {
+    webviewPreloadPath: preload
+  }
+}
+
+const onElectronStoreGet = async (
+  event: Electron.IpcMainEvent,
+  val: keyof StoreSchema
+): Promise<void> => {
+  event.returnValue = store.get(val)
+}
+
+const onElectronStoreSet = async (
+  _: Electron.IpcMainEvent,
+  key: keyof StoreSchema,
+  val: StoreSchema[keyof StoreSchema]
+): Promise<void> => {
+  store.set(key, val)
+}
+
+const onElectronStoreDelete = async (
+  _: Electron.IpcMainEvent,
+  key: keyof StoreSchema
+): Promise<void> => {
+  store.delete(key)
+}
+
+export const initAppMetaHandlers = (_mainWindow: BrowserWindow): void => {
   ipcMain.removeHandler('app-meta')
-  ipcMain.handle('app-meta', () => {
-    return {
-      webviewPreloadPath: preload
-    }
-  })
+  ipcMain.handle('app-meta', handleAppMeta)
 
-  ipcMain.on('electron-store-get', async (event, val) => {
-    event.returnValue = store.get(val)
-  })
-  ipcMain.on('electron-store-set', async (_, key, val) => {
-    store.set(key, val)
-  })
-  ipcMain.on('electron-store-delete', async (_, key) => {
-    store.delete(key)
-  })
+  ipcMain.on('electron-store-get', onElectronStoreGet)
 
-  win.on('close', function (e) {
-    const response = dialog.showMessageBoxSync(win, {
+  ipcMain.on('electron-store-set', onElectronStoreSet)
+  ipcMain.on('electron-store-delete', onElectronStoreDelete)
+
+  _mainWindow.on('close', function (e) {
+    const response = dialog.showMessageBoxSync(_mainWindow, {
       type: 'question',
       buttons: ['Yes', 'No'],
       title: 'Confirm',
