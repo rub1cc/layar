@@ -1,102 +1,91 @@
 import { Toolbar } from '@/components/toolbar'
-import { useAtom, useAtomValue } from 'jotai'
-import Mousetrap from 'mousetrap'
-import { useEffect } from 'react'
-import { createPortal } from 'react-dom'
+import { useAtomValue } from 'jotai'
+import { useRef } from 'react'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { AddressBar } from './components/address-bar'
 import { Device } from './components/device'
+import { DevicesPanel } from './components/panels/devices'
+import { DevtoolsPanel } from './components/panels/devtools'
+import { SEOPanel } from './components/panels/seo'
 import { ToolbarSecondary } from './components/toolbar-secondary'
 import { Webview } from './components/webview'
 import { ZoomIndicator } from './components/zoom-indicator'
+import { useRegisterShortcuts } from './hooks/use-register-shortcuts'
+import { defaultDevices } from './lib/devices'
 import {
   browserViewAtom,
   deviceAlignmentAtom,
   devicesAtom,
+  rightPanelAtom,
   searchingAtom,
-  urlAtom,
-  zoomAtom
+  urlAtom
 } from './lib/state'
 import { cn } from './lib/utils'
 
 function App(): JSX.Element {
+  const devtoolsPanelRef = useRef<{ resize: () => void } | null>(null)
+
   const url = useAtomValue(urlAtom)
-  const [zoom, setZoom] = useAtom(zoomAtom)
-  const [searching, setSearching] = useAtom(searchingAtom)
+  const searching = useAtomValue(searchingAtom)
   const devices = useAtomValue(devicesAtom)
   const deviceAlignment = useAtomValue(deviceAlignmentAtom)
   const browserView = useAtomValue(browserViewAtom)
+  const rightPanel = useAtomValue(rightPanelAtom)
 
-  const registerShortcuts = (): void => {
-    Mousetrap.reset()
-    Mousetrap.bind('mod+r', function () {
-      document.querySelectorAll('webview').forEach((webview: Element) => {
-        const wv = webview as Electron.WebviewTag
-        wv.reload()
-      })
-    })
-    Mousetrap.bind('mod+l', function () {
-      setSearching(true)
-    })
-    Mousetrap.bind('mod+0', function () {
-      setZoom(0.5)
-    })
-    Mousetrap.bind('mod+-', function () {
-      if (zoom <= 0.4) return
-      setZoom(zoom - 0.1)
-    })
-    Mousetrap.bind('mod+=', function () {
-      if (zoom >= 1.2) return
-      setZoom(zoom + 0.1)
-    })
-    Mousetrap.bind('mod+left', function () {
-      document.querySelectorAll('webview').forEach((webview: Element) => {
-        ;(webview as Electron.WebviewTag).goBack()
-      })
-    })
-    Mousetrap.bind('mod+right', function () {
-      document.querySelectorAll('webview').forEach((webview: Element) => {
-        ;(webview as Electron.WebviewTag).goForward()
-      })
-    })
-  }
-
-  useEffect(() => {
-    registerShortcuts()
-  }, [])
+  useRegisterShortcuts()
 
   return (
     <div className="bg-neutral-900">
       {browserView === 'responsive' && <ZoomIndicator />}
-      {url && createPortal(<Toolbar />, document.body)}
+      {url && <Toolbar />}
       <div className="flex flex-1">
-        {url ? (
-          <div
-            className={cn(
-              'gap-8 pt-[40px] w-full h-screen overflow-auto',
-              browserView === 'responsive' && 'p-4 pt-[56px]',
-              deviceAlignment === 'grid' && 'flex flex-wrap',
-              deviceAlignment === 'horizontal' && 'flex flex-nowrap',
-              deviceAlignment === 'vertical' && 'flex flex-col items-center'
-            )}
-          >
-            {url && browserView === 'responsive' ? (
-              devices.map((device) => {
-                return (
-                  <div key={device.id}>
-                    <Device device={device} />
-                  </div>
-                )
-              })
-            ) : (
-              <Webview />
-            )}
-          </div>
-        ) : (
-          <div className="flex justify-center items-center p-4 pt-[56px] w-full h-screen overflow-auto">
-            <AddressBar />
-          </div>
-        )}
-        {url && <ToolbarSecondary />}
+        <PanelGroup direction="horizontal">
+          {url ? (
+            <Panel>
+              <div
+                className={cn(
+                  'gap-8 pt-[40px] w-full h-screen overflow-auto',
+                  browserView === 'responsive' && 'p-4 pt-[56px]',
+                  deviceAlignment === 'grid' && 'flex flex-wrap',
+                  deviceAlignment === 'horizontal' && 'flex flex-nowrap',
+                  deviceAlignment === 'vertical' && 'flex flex-col items-center'
+                )}
+              >
+                {url && browserView === 'responsive' ? (
+                  (devices?.length > 0
+                    ? devices
+                    : defaultDevices.filter((d) => ['10015'].includes(d.code))
+                  ).map((device) => {
+                    return (
+                      <div key={device.id}>
+                        <Device device={device} />
+                      </div>
+                    )
+                  })
+                ) : (
+                  <Webview />
+                )}
+              </div>
+            </Panel>
+          ) : (
+            <div className="flex justify-center items-center p-4 pt-[56px] w-full h-screen overflow-auto">
+              <AddressBar />
+            </div>
+          )}
+
+          {rightPanel && (
+            <>
+              <PanelResizeHandle className="w-2 hover:bg-blue-500 transition duration-300" />
+              <Panel className="min-w-[100px]" onResize={() => devtoolsPanelRef.current?.resize()}>
+                {browserView === 'responsive' && rightPanel === 'devices' && <DevicesPanel />}
+                {rightPanel === 'seo' && <SEOPanel />}
+                {rightPanel === 'devtools' && <DevtoolsPanel ref={devtoolsPanelRef} />}
+              </Panel>
+            </>
+          )}
+
+          {url && <ToolbarSecondary />}
+        </PanelGroup>
         {searching && <AddressBar />}
       </div>
     </div>

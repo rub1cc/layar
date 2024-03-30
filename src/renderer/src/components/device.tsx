@@ -1,4 +1,4 @@
-import { devicesAtom, updateHistoryAtom, urlAtom, zoomAtom } from '@/lib/state'
+import { devicesAtom, rightPanelAtom, updateHistoryAtom, urlAtom, zoomAtom } from '@/lib/state'
 import { cn } from '@/lib/utils'
 import { Device as IDevice } from '@/shared/types'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
@@ -20,6 +20,7 @@ export const Device: FC<DeviceProps> = (props) => {
   const [devices, setDevices] = useAtom(devicesAtom)
   const zoom = useAtomValue(zoomAtom)
   const updateHistory = useSetAtom(updateHistoryAtom)
+  const setRightPanel = useSetAtom(rightPanelAtom)
 
   let { width, height } = props.device
 
@@ -175,9 +176,15 @@ export const Device: FC<DeviceProps> = (props) => {
           </button>
           <button
             onClick={() => {
+              window.electron.ipcRenderer.invoke('close-devtools')
+              setRightPanel(null)
+
               window.electron.ipcRenderer.invoke('open-devtools', {
                 webviewId: ref.current?.getWebContentsId()
               })
+              setTimeout(() => {
+                setRightPanel('devtools')
+              }, 0)
             }}
           >
             <TerminalSquare className="w-4 text-white/50 hover:text-white" />

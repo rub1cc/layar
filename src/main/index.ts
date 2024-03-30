@@ -3,6 +3,7 @@ import { BrowserWindow, app, ipcMain } from 'electron'
 import { join } from 'path'
 import icon from '../../resources/icon.png?asset'
 import { initAppMetaHandlers } from './app-meta'
+import { initDevtoolsHandlers } from './devtools'
 
 function createWindow(): void {
   // Create the browser window.
@@ -35,6 +36,7 @@ function createWindow(): void {
   mainWindow.maximize()
 
   initAppMetaHandlers(mainWindow)
+  initDevtoolsHandlers(mainWindow)
 
   mainWindow.on('ready-to-show', async () => {
     mainWindow.show()

@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 .drag {
   -webkit-user-select: none;
   -webkit-app-region: drag;
@@ -10,7 +15,6 @@
 .drag > * {
   -webkit-app-region: no-drag;
 }
-
 
 * {
   outline: none;

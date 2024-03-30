@@ -1,4 +1,10 @@
-import { browserViewAtom, deviceAlignmentAtom, searchingAtom, urlAtom } from '@/lib/state'
+import {
+  browserViewAtom,
+  deviceAlignmentAtom,
+  rightPanelAtom,
+  searchingAtom,
+  urlAtom
+} from '@/lib/state'
 import { cn } from '@/lib/utils'
 import {
   DropdownMenu,
@@ -44,6 +50,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
   const [deviceAlignment, setDeviceAlignment] = useAtom(deviceAlignmentAtom)
   const [browserView, setBrowserView] = useAtom(browserViewAtom)
   const setSearching = useSetAtom(searchingAtom)
+  const setRightPanel = useSetAtom(rightPanelAtom)
 
   const handleGoBack = (): void => {
     document.querySelectorAll('webview').forEach((webview: Element) => {
@@ -98,7 +105,11 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
       <button
         className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
         title="Device Alignment"
-        onClick={() => setBrowserView(browserView === 'responsive' ? 'full' : 'responsive')}
+        onClick={() => {
+          setBrowserView(browserView === 'responsive' ? 'full' : 'responsive')
+          window.electron.ipcRenderer.invoke('close-devtools')
+          setRightPanel(null)
+        }}
       >
         {browserView === 'responsive' ? (
           <Expand className="w-4 h-4" />

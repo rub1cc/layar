@@ -1,22 +1,26 @@
 import { cn } from '@/lib/utils'
-import { FC } from 'react'
+import { FC, forwardRef } from 'react'
 
 type PanelProps = {
-  children: React.ReactNode
+  children?: React.ReactNode
+  resizable?: boolean
   className?: string
+  onResize?: (size: number, prevSize: number | undefined) => void
 }
-const PanelRoot: FC<PanelProps> = (props) => {
+const PanelRoot = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
   return (
     <div
+      ref={ref}
       className={cn(
-        'bg-neutral-800 w-[600px] h-screen overflow-auto pt-[60px] pb-8 px-4 border-r border-l border-white/5',
+        'bg-neutral-800 w-full h-screen overflow-auto pt-[60px] pb-8 px-4 border-r border-l border-white/5',
         props.className
       )}
     >
       {props.children}
     </div>
   )
-}
+})
+PanelRoot.displayName = 'PanelRoot'
 
 type PanelTitleProps = {
   children: React.ReactNode

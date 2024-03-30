@@ -121,33 +121,36 @@ const SuggestionList: FC<SuggestionListProps> = (props) => {
   return (
     <div className="border-t border-neutral-700/30 py-4 overflow-auto max-h-[284px]">
       {props.input && (
-        <div
-          id={`suggestion-1`}
+        <button
+          type="button"
           className={cn(
-            'p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4',
+            'w-full p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4',
             activeIndex === -1 ? 'bg-blue-700 hover:bg-blue-700' : ''
           )}
+          onClick={() => searchUrl(props.input)}
         >
           <span>
             <Search className="w-4 h-4" />
           </span>
           <span className="line-clamp-1">{props.input}</span>
-        </div>
+        </button>
       )}
       {suggestions.map((suggestion, index) => (
-        <div
+        <button
+          type="button"
           id={`suggestion${index}`}
           key={`suggestion${index}`}
           className={cn(
-            'p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4',
+            'w-full p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4',
             activeIndex === index ? 'bg-blue-700 hover:bg-blue-700' : ''
           )}
+          onClick={() => searchUrl(suggestion.url)}
         >
           <img src={getFavicon(suggestion.url)} className="w-4 h-4" alt="favicon" />
           <span className="line-clamp-1">
             {suggestion.label} <span className="text-white/30">- {suggestion.url}</span>
           </span>
-        </div>
+        </button>
       ))}
     </div>
   )
