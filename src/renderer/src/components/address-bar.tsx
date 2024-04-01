@@ -124,7 +124,7 @@ const SuggestionList: FC<SuggestionListProps> = (props) => {
         <button
           type="button"
           className={cn(
-            'w-full p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4',
+            'text-left w-full p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4',
             activeIndex === -1 ? 'bg-blue-700 hover:bg-blue-700' : ''
           )}
           onClick={() => searchUrl(props.input)}
@@ -141,7 +141,7 @@ const SuggestionList: FC<SuggestionListProps> = (props) => {
           id={`suggestion${index}`}
           key={`suggestion${index}`}
           className={cn(
-            'w-full p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4',
+            'text-left w-full p-4 rounded-lg ui-active:bg-blue-700 hover:bg-neutral-700/30 text-white/80 flex items-center gap-4',
             activeIndex === index ? 'bg-blue-700 hover:bg-blue-700' : ''
           )}
           onClick={() => searchUrl(suggestion.url)}

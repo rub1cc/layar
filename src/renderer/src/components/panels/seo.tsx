@@ -260,18 +260,21 @@ export const SEOPanel: FC = () => {
       <p className="text-white/40 mt-8 text-xs uppercase tracking-wider">Headings</p>
 
       <div className="mt-2 flex flex-col gap-3">
-        {metadata?.headings
-          .sort((a, b) => a.level.localeCompare(b.level))
-          .map((heading, index) => {
-            return (
-              <div key={`heading-${index}`} className="flex gap-3 text-white/80">
-                <span className="uppercase text-xs bg-neutral-700 self-start inline-block px-2 py-1 rounded-lg">
-                  {heading.level}
-                </span>
-                <span className="text-sm">{heading.text}</span>
-              </div>
-            )
-          })}
+        {metadata?.headings.map((heading, index) => {
+          return (
+            <div key={`heading-${index}`} className="flex gap-3 text-white/80">
+              <span
+                className="text-xs text-neutral-500 self-start inline-block rounded-lg"
+                style={{
+                  paddingLeft: (parseInt(heading.level.slice(1, 2)) - 1) * 20
+                }}
+              >
+                {'<' + heading.level + '>'}
+              </span>
+              <span className="text-sm">{heading.text}</span>
+            </div>
+          )
+        })}
       </div>
 
       <Panel.Title className="mt-12">Social Media Preview</Panel.Title>

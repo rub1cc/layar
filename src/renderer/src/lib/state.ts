@@ -48,7 +48,7 @@ export const deviceAlignmentAtom = persistAtom('devicesAlignment')
 /**
  * atom for handling what is displayed in the right panel
  */
-export const rightPanelAtom = atom<'devices' | 'seo' | null>(null)
+export const rightPanelAtom = atom<'devices' | 'seo' | 'devtools' | null>(null)
 
 /**
  * atom for handling the browser view
