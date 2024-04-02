@@ -19,3 +19,13 @@ html {
 * {
   outline: none;
 }
+
+.no-scroll-indicator {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scroll-indicator::-webkit-scrollbar {
+  display: none;
+}
+

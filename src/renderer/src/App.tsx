@@ -76,7 +76,7 @@ function App(): JSX.Element {
           {rightPanel && (
             <>
               <PanelResizeHandle className="w-2 hover:bg-blue-500 transition duration-300" />
-              <Panel className="min-w-[100px]" onResize={() => devtoolsPanelRef.current?.resize()}>
+              <Panel className="min-w-[200px]" onResize={() => devtoolsPanelRef.current?.resize()}>
                 {browserView === 'responsive' && rightPanel === 'devices' && <DevicesPanel />}
                 {rightPanel === 'seo' && <SEOPanel />}
                 {rightPanel === 'devtools' && <DevtoolsPanel ref={devtoolsPanelRef} />}

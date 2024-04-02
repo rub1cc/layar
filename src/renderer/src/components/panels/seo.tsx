@@ -1,12 +1,11 @@
 import { urlAtom } from '@/lib/state'
+import { ReloadIcon } from '@radix-ui/react-icons'
+import cheerio from 'cheerio'
 import { useAtomValue } from 'jotai'
-import { RefreshCcw } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
-import urlMetadata from 'url-metadata'
 import { Panel } from './panel'
 
 export interface Metadata {
-  requestUrl: string
   url: string
   canonical: string
   lang: string
@@ -16,270 +15,223 @@ export interface Metadata {
   favicons: Array<{
     rel: string
     href: string
-    type?: string
-    sizes?: string
   }>
-  author: string
   description: string
   keywords: string
   source: string
-  price: string
-  priceCurrency: string
-  availability: string
   robots: string
   jsonld: any[]
-  'og:url': string
-  'og:locale': string
-  'og:locale:alternate': string
-  'og:title': string
-  'og:type': string
-  'og:description': string
-  'og:determiner': string
-  'og:site_name': string
-  'og:image': string
-  'og:image:secure_url': string
-  'og:image:type': string
-  'og:image:width': string
-  'og:image:height': string
-  'twitter:title': string
-  'twitter:description': string
-  'twitter:image': string
-  'twitter:image:alt': string
-  'twitter:card': string
-  'twitter:site': string
-  'twitter:site:id': string
-  'twitter:url': string
-  'twitter:account_id': string
-  'twitter:creator': string
-  'twitter:creator:id': string
-  'twitter:player': string
-  'twitter:player:width': string
-  'twitter:player:height': string
-  'twitter:player:stream': string
-  'twitter:app:name:iphone': string
-  'twitter:app:id:iphone': string
-  'twitter:app:url:iphone': string
-  'twitter:app:name:ipad': string
-  'twitter:app:id:ipad': string
-  'twitter:app:url:ipad': string
-  'twitter:app:name:googleplay': string
-  'twitter:app:id:googleplay': string
-  'twitter:app:url:googleplay': string
   headings: Array<{
     level: string
     text: string
   }>
-  imgTags: Array<{
+  images: Array<{
     src: string
     alt: string
   }>
-  responseBody: string
-  'X-UA-Compatible': string
-  'Content-Type': string
-  viewport: string
-  copyright: string
-  googlebot: string
-  'googlebot-news': string
-  msnbot: string
-  webcrawlers: string
-  spiders: string
-  'twitter:domain': string
-  'twitter:image:src': string
-  'mobile-web-app-capable': string
-  'theme-color': string
-  'msapplication-TileColor': string
-  'msapplication-TileImage': string
-  'apple-mobile-web-app-capable': string
-  'apple-mobile-web-app-status-bar-style': string
-  'next-head-count': string
+  links: Array<{
+    rel: string
+    href: string
+  }>
+  robotstxt: string
+  [key: string]: any
 }
 
-export const SEOPanel: FC = () => {
-  const url = useAtomValue(urlAtom)
-  const [metadata, setMetadata] = useState<Metadata | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<Error | null>(null)
+const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
+  return (
+    <>
+      <details className="text-white/85">
+        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
+          Site information
+        </summary>
 
-  const getMetadata = async (): Promise<void> => {
-    setLoading(true)
-    urlMetadata(url, {
-      // `fetch` API cache setting for request
-      cache: 'no-cache'
-    })
-      .then((res) => {
-        const data = res as Metadata
-        if (!data.url) {
-          throw new Error('No URL found in metadata')
-        }
-        setMetadata(data)
-        setError(null)
-      })
-      .catch((err) => {
-        setError(err)
-        setMetadata(null)
-      })
-      .finally(() => {
-        setTimeout(() => {
-          setLoading(false)
-        }, 500)
-      })
-  }
+        <div className="p-2">
+          <table>
+            <tr className="align-baseline text-white/85">
+              <td className="w-[150px] py-1.5">Favicon</td>
+              <td>
+                <img src={metadata?.favicons?.[0]?.href} alt="favicon" className="w-10" />
+              </td>
+            </tr>
+            {[
+              {
+                label: 'Title',
+                value: metadata?.title
+              },
+              {
+                label: 'Description',
+                value: metadata?.description
+              },
+              {
+                label: 'Keywords',
+                value: metadata?.keywords
+              },
+              {
+                label: 'Canonical URL',
+                value: metadata?.url && metadata?.canonical
+              },
+              {
+                label: 'Charset',
+                value: metadata?.charset
+              },
+              {
+                label: 'Language',
+                value: metadata?.lang
+              }
+            ].map((item, index) => {
+              return (
+                <tr
+                  key={`site-info
+                -${index}`}
+                  className="align-baseline text-white/85"
+                >
+                  <td className="w-[150px] py-1.5">{item.label}</td>
+                  <td>{item.value}</td>
+                </tr>
+              )
+            })}
+          </table>
+        </div>
+      </details>
 
-  useEffect(() => {
-    if (url) getMetadata()
-  }, [])
+      <details className="text-white/85">
+        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
+          Robots.txt
+        </summary>
+        <div className="p-2">
+          <code>
+            {metadata?.robotstxt.split('\n')?.map((line, index) => {
+              return <p key={`robotstxt-${index}`}>{line}</p>
+            })}
+          </code>
+        </div>
+      </details>
 
-  if (loading) {
-    return (
-      <Panel.Root>
-        <div
-          className="bg-neutral-600 animate-pulse"
-          style={{
-            width: '120px',
-            height: '20px'
-          }}
-        ></div>
-        <div
-          className="bg-neutral-600/50 animate-pulse mt-8"
-          style={{
-            width: '100px',
-            height: '16px'
-          }}
-        ></div>
-        <div
-          className="bg-neutral-600 animate-pulse mt-2"
-          style={{
-            width: '100%',
-            height: '20px'
-          }}
-        ></div>
-        <div
-          className="bg-neutral-600/40 animate-pulse mt-2"
-          style={{
-            width: '80%',
-            height: '20px'
-          }}
-        ></div>
-        <div
-          className="bg-neutral-600/40 animate-pulse mt-8"
-          style={{
-            width: '100%',
-            aspectRatio: '516/270',
-            borderRadius: '8px'
-          }}
-        ></div>
-        <div
-          className="bg-neutral-600/50 animate-pulse mt-8"
-          style={{
-            width: '100px',
-            height: '16px'
-          }}
-        ></div>
-        <div
-          className="bg-neutral-600 animate-pulse mt-2"
-          style={{
-            width: '100%',
-            height: '20px'
-          }}
-        ></div>
-        <div
-          className="bg-neutral-600/90 animate-pulse mt-8"
-          style={{
-            width: '100%',
-            aspectRatio: '516/270',
-            borderRadius: '8px'
-          }}
-        ></div>
-      </Panel.Root>
-    )
-  }
+      <details className="text-white/85">
+        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
+          Open graph tags
+        </summary>
+        <div className="p-2 space-y-4">
+          <table>
+            {Object.keys(metadata || {}).map((key, index) => {
+              if (key.startsWith('og:')) {
+                return (
+                  <tr key={`og-${index}`} className="align-baseline">
+                    <td className="w-[150px] py-1.5">{key}</td>
+                    <td>{metadata[key]}</td>
+                  </tr>
+                )
+              }
+            })}
+          </table>
+        </div>
+      </details>
 
-  if (error) {
-    return (
-      <Panel.Root>
-        <Panel.Title>Error</Panel.Title>
+      <details className="text-white/85">
+        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
+          Twitter tags
+        </summary>
+        <div className="p-2 space-y-4">
+          <table>
+            {Object.keys(metadata || {}).map((key, index) => {
+              if (key.startsWith('twitter:')) {
+                return (
+                  <tr key={`twitter-${index}`} className="align-baseline">
+                    <td className="w-[150px] py-1.5">{key}</td>
+                    <td>{metadata[key]}</td>
+                  </tr>
+                )
+              }
+            })}
+          </table>
+        </div>
+      </details>
 
-        <p className="text-white/80 mt-8">We couldn't fetch the metadata for this URL</p>
+      <details className="text-white/85">
+        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
+          Headings
+        </summary>
+        <div className="flex flex-col gap-2 p-2">
+          {metadata?.headings?.filter((heading) => heading.level === 'h1')?.length > 1 && (
+            <p>
+              <span className="text-red-400">
+                This page has more than one <code>{'<h1>'}</code> tags
+              </span>
+            </p>
+          )}
+          {metadata?.headings?.filter((heading) => heading.level === 'h1')?.length === 0 && (
+            <p>
+              <span className="text-red-400">
+                This page has no <code>{'<h1>'}</code> tag
+              </span>
+            </p>
+          )}
+          {metadata?.headings?.map((heading, index) => {
+            return (
+              <div key={`heading-${index}`} className="flex gap-3 text-white/80">
+                <span
+                  className="text-xs text-neutral-500 self-start inline-block rounded-lg"
+                  style={{
+                    paddingLeft: (parseInt(heading.level.slice(1, 2)) - 1) * 36
+                  }}
+                >
+                  {'<' + heading.level + '>'}
+                </span>
+                <p>
+                  <span className="block">{heading.text}</span>
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      </details>
 
-        <button onClick={getMetadata} className="text-blue-700">
-          Try again
-        </button>
-      </Panel.Root>
-    )
-  }
+      <details className="text-white/85">
+        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
+          Anchors
+        </summary>
+        <div className="p-2 space-y-4">
+          <table className="w-full" cellPadding="4px">
+            <tr>
+              <td>rel</td>
+              <td>href</td>
+            </tr>
+            {metadata?.links?.map((link, index) => {
+              return (
+                <tr key={`link-${index}`}>
+                  <td>{link.rel}</td>
+                  <td>{link.href}</td>
+                </tr>
+              )
+            })}
+          </table>
+        </div>
+      </details>
 
+      {/* <details className="text-white/85">
+        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
+          Images
+        </summary>
+        <div className="p-2 space-y-4">
+          {metadata?.images?.map((image, index) => {
+            return <img key={`image-${index}`} src={image.src} alt={image.alt} className="w-full" />
+          })}
+        </div>
+      </details> */}
+    </>
+  )
+}
+
+const TabSocialPreview: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
   const getImage = (metadata: Metadata | null): string => {
     if (!metadata) return ''
     const img = metadata?.['og:image'] || metadata.image
     if (img?.startsWith('http')) return img
     return metadata.url + img
   }
-
   return (
-    <Panel.Root>
-      <div className="flex items-center justify-between">
-        <Panel.Title>
-          <span>Metadata</span>
-        </Panel.Title>
-        <button>
-          <RefreshCcw className="w-4 text-white/50 hover:text-white" onClick={getMetadata} />
-          <span className="hidden">Reload</span>
-        </button>
-      </div>
-
-      <p className="text-white/40 mt-8 text-xs uppercase tracking-wider">
-        Title{' '}
-        <span className="normal-case">
-          ({metadata?.title.length} characters){' '}
-          {Number(metadata?.title.length) > 65 ? (
-            <span className="text-red-500">Too long</span>
-          ) : Number(metadata?.title.length) > 35 ? (
-            <span className="text-green-500">Good length</span>
-          ) : (
-            <span className="text-yellow-500">Too short</span>
-          )}
-        </span>
-      </p>
-      <p className="text-white/80 text-sm mt-2">{metadata?.title}</p>
-
-      <p className="text-white/40 mt-8 text-xs uppercase tracking-wider">
-        Description{' '}
-        <span className="normal-case">
-          ({metadata?.description.length} characters){' '}
-          {Number(metadata?.description.length) > 160 ? (
-            <span className="text-red-500">Too long</span>
-          ) : Number(metadata?.description.length) > 50 ? (
-            <span className="text-green-500">Good length</span>
-          ) : (
-            <span className="text-yellow-500">Too short</span>
-          )}
-        </span>
-      </p>
-      <p className="text-white/80 text-sm mt-2">{metadata?.description}</p>
-
-      <p className="text-white/40 mt-8 text-xs uppercase tracking-wider">Headings</p>
-
-      <div className="mt-2 flex flex-col gap-3">
-        {metadata?.headings.map((heading, index) => {
-          return (
-            <div key={`heading-${index}`} className="flex gap-3 text-white/80">
-              <span
-                className="text-xs text-neutral-500 self-start inline-block rounded-lg"
-                style={{
-                  paddingLeft: (parseInt(heading.level.slice(1, 2)) - 1) * 20
-                }}
-              >
-                {'<' + heading.level + '>'}
-              </span>
-              <span className="text-sm">{heading.text}</span>
-            </div>
-          )
-        })}
-      </div>
-
-      <Panel.Title className="mt-12">Social Media Preview</Panel.Title>
-
-      <p className="text-white/40 mt-8 text-xs uppercase tracking-wider">Google</p>
+    <div className="p-2">
+      <p className="text-white/40 text-xs uppercase tracking-wider">Google</p>
       <div className="flex flex-col bg-white p-2 rounded mt-2">
         <p className="text-sm" style={{ color: '#190DAB' }}>
           {metadata?.title}
@@ -290,14 +242,14 @@ export const SEOPanel: FC = () => {
             color: '#006621'
           }}
         >
-          {metadata?.url}
+          {metadata?.url || metadata?.canonical}
         </p>
         <p className="text-xs line-clamp-2 mt-1" style={{ color: '#545454' }}>
           {metadata?.description}
         </p>
       </div>
 
-      <p className="text-white/40 mt-8 text-xs uppercase tracking-wider">Twitter</p>
+      <p className="text-white/40 mt-4 text-xs uppercase tracking-wider">Twitter</p>
       <div
         className="mt-2 relative"
         style={{
@@ -314,7 +266,7 @@ export const SEOPanel: FC = () => {
         </p>
       </div>
 
-      <p className="text-white/40 mt-8 text-xs uppercase tracking-wider">Facebook</p>
+      <p className="text-white/40 mt-4 text-xs uppercase tracking-wider">Facebook</p>
       <div className="mt-2 w-full">
         <img
           src={getImage(metadata)}
@@ -339,6 +291,132 @@ export const SEOPanel: FC = () => {
           <p className="text-xs line-clamp-1">{metadata?.description}</p>
         </div>
       </div>
+    </div>
+  )
+}
+
+export const SEOPanel: FC = () => {
+  const url = useAtomValue(urlAtom)
+  const [metadata, setMetadata] = useState<Metadata | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<Error | null>(null)
+
+  const getMetadata = async (): Promise<void> => {
+    setLoading(true)
+    window.electron.ipcRenderer
+      .invoke('get-metadata', { url })
+      .then(({ status, data, robots, message }) => {
+        if (status === 'error') {
+          setError(message)
+          return
+        }
+
+        const $ = cheerio.load(data)
+        const meta = {}
+
+        $('meta').each((index, element) => {
+          const name = $(element).attr('name')
+          const property = $(element).attr('property')
+          const content = $(element).attr('content')
+          if (name) meta[name] = content
+          if (property) meta[property] = content
+        })
+
+        $('head title').each((index, element) => {
+          meta['title'] = $(element).text()
+        })
+
+        $('h1, h2, h3, h4, h5, h6').each((index, element) => {
+          if (!meta['headings']) meta['headings'] = []
+          meta['headings'].push({
+            level: $(element).prop('tagName').toLocaleLowerCase(),
+            text: $(element).text()
+          })
+        })
+
+        $('link[rel="icon"]').each((index, element) => {
+          const rel = $(element).attr('rel')
+          const href = $(element).attr('href')
+          if (!meta['favicons']) meta['favicons'] = []
+          meta['favicons'].push({ rel, href })
+        })
+
+        $('a').each((index, element) => {
+          const rel = $(element).attr('rel')
+          const href = $(element).attr('href')?.startsWith('http')
+            ? $(element).attr('href')
+            : url + $(element).attr('href')
+          if (!meta['links']) meta['links'] = []
+          meta['links'].push({ rel, href })
+        })
+
+        meta['charset'] = $('meta[charset]').attr('charset')
+        meta['lang'] = $('html').attr('lang')
+        meta['canonical'] = $('link[rel="canonical"]').attr('href')
+        meta['url'] = $('meta[property="og:url"]').attr('content')
+        meta['keywords'] = $('meta[name="keywords"]').attr('content')
+
+        $('img').each((index, element) => {
+          if (!meta['images']) meta['images'] = []
+          meta['images'].push({
+            src: $(element).attr('src'),
+            alt: $(element).attr('alt')
+          })
+        })
+
+        // get robot
+        meta['robots'] = $('meta[name="robots"]').attr('content')
+        meta['robotstxt'] = robots
+
+        setMetadata(meta as Metadata)
+
+        console.log(meta, { robots })
+      })
+      .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    if (url) getMetadata()
+  }, [])
+
+  return (
+    <Panel.Root>
+      <Panel.Tabs defaultValue="meta">
+        <div className="flex items-center bg-[#3C3C3C] sticky top-0">
+          <button className="px-1" onClick={getMetadata}>
+            <span className="hidden">Reload</span>
+            <ReloadIcon className="w-4 text-white/50 hover:text-white" />
+          </button>
+          <Panel.TabsList
+            items={[
+              { value: 'meta', label: 'Meta' },
+              { value: 'social-preview', label: 'Social Media Preview' }
+            ]}
+          />
+        </div>
+        <Panel.TabsContent
+          value="meta"
+          isLoading={loading}
+          renderLoading={
+            <p className="text-white/60 p-2">
+              We are getting the data for you. This should only take a few seconds.
+            </p>
+          }
+        >
+          <TabMeta metadata={metadata} />
+        </Panel.TabsContent>
+        <Panel.TabsContent
+          value="social-preview"
+          isLoading={loading}
+          renderLoading={
+            <p className="text-white/60 p-2">
+              We are getting the data for you. This should only take a few seconds.
+            </p>
+          }
+        >
+          <TabSocialPreview metadata={metadata} />
+        </Panel.TabsContent>
+      </Panel.Tabs>
     </Panel.Root>
   )
 }

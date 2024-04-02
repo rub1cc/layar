@@ -71,7 +71,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-10 px-1.5 h-[40px] flex justify-between items-center gap-2 bg-neutral-800 border-b border-white/5 pl-[80px] drag">
+    <div className="fixed top-0 left-0 right-0 z-20 px-1.5 h-[40px] flex justify-between items-center gap-2 bg-neutral-800 border-b border-white/5 pl-[80px] drag">
       <div className="flex items-center">
         <button
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"

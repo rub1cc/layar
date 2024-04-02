@@ -31,11 +31,7 @@ export const DevtoolsPanel = forwardRef<
     handleResize()
   }, [])
 
-  return (
-    <Panel.Root ref={panelRef}>
-      <Panel.Title>Devtools</Panel.Title>
-    </Panel.Root>
-  )
+  return <Panel.Root ref={panelRef}></Panel.Root>
 })
 
 DevtoolsPanel.displayName = 'DevtoolsPanel'
