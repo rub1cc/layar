@@ -45,7 +45,7 @@ export const initAppMetaHandlers = (_mainWindow: BrowserWindow): void => {
   ipcMain.on('electron-store-delete', onElectronStoreDelete)
 
   ipcMain.removeHandler('get-metadata')
-  ipcMain.handle('get-metadata', async (event, { url }) => {
+  ipcMain.handle('get-metadata', async (_, { url }) => {
     try {
       const data = await fetch(url)
       const robots = await fetch(`${new URL(url).origin}/robots.txt`)

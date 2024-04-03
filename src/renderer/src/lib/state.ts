@@ -1,13 +1,13 @@
 import { StoreSchema } from '@/shared/types'
 import { WritableAtom, atom } from 'jotai'
-import { defaultDevices } from './devices'
+import { mobileDevices } from './devices'
 
 const persistAtom = <K extends keyof StoreSchema>(
   key: K,
   initialValue?: StoreSchema[K]
 ): WritableAtom<StoreSchema[K], [update: StoreSchema[K]], void> => {
   const getInitialValue = (): StoreSchema[K] => {
-    return window.api.store.get(key)
+    return window.api.store.get(key) ?? initialValue
   }
   const baseAtom = atom(getInitialValue() ?? initialValue)
   const derivedAtom = atom(
@@ -35,10 +35,7 @@ export const urlAtom = persistAtom('url')
 /**
  * atom for handling the devices
  */
-export const devicesAtom = persistAtom(
-  'devices',
-  defaultDevices.filter((d) => ['10003'].includes(d.code))
-)
+export const devicesAtom = persistAtom('devices', [mobileDevices[0]])
 
 /**
  * atom for handling the alignment of the devices
@@ -48,7 +45,7 @@ export const deviceAlignmentAtom = persistAtom('devicesAlignment')
 /**
  * atom for handling what is displayed in the right panel
  */
-export const rightPanelAtom = atom<'devices' | 'seo' | 'devtools' | null>(null)
+export const rightPanelAtom = atom<'seo' | 'devtools' | null>(null)
 
 /**
  * atom for handling the browser view

@@ -1,7 +1,7 @@
 import { browserViewAtom, rightPanelAtom } from '@/lib/state'
 import { cn } from '@/lib/utils'
 import { useAtom, useAtomValue } from 'jotai'
-import { Smartphone, Terminal, ThumbsUp, XIcon } from 'lucide-react'
+import { Terminal, ThumbsUp, XIcon } from 'lucide-react'
 import { useMemo } from 'react'
 
 type ToolbarProps = {
@@ -14,19 +14,6 @@ export const ToolbarSecondary: React.FC<ToolbarProps> = () => {
 
   const menu = useMemo(
     () => [
-      {
-        hide: browserView === 'full',
-        label: 'Devices',
-        icon: <Smartphone width="14px" className="transform -rotate-90" />,
-        onClick: (): void => {
-          window.electron.ipcRenderer.invoke('close-devtools')
-          if (rightPanel === 'devices') {
-            setRightPanel(null)
-            return
-          }
-          setRightPanel('devices')
-        }
-      },
       {
         label: 'Devtools',
         icon: <Terminal width="14px" className="transform -rotate-90" />,
@@ -64,21 +51,19 @@ export const ToolbarSecondary: React.FC<ToolbarProps> = () => {
   return (
     <div className="bg-neutral-800 w-8 pt-[52px]">
       <div className="flex transform rotate-90 gap-1">
-        {menu
-          .filter((item) => !item.hide)
-          .map((item, index) => (
-            <button
-              key={index}
-              onClick={item.onClick}
-              className={cn(
-                'flex items-center gap-2 px-2 rounded-md hover:bg-neutral-700 text-white/80 text-xs whitespace-nowrap',
-                rightPanel === item.label.toLowerCase() && 'bg-neutral-700'
-              )}
-            >
-              {rightPanel === item.label.toLowerCase() ? <XIcon width="14px" /> : item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
+        {menu.map((item, index) => (
+          <button
+            key={index}
+            onClick={item.onClick}
+            className={cn(
+              'flex items-center gap-2 px-2 rounded-md hover:bg-neutral-700 text-white/80 text-xs whitespace-nowrap',
+              rightPanel === item.label.toLowerCase() && 'bg-neutral-700'
+            )}
+          >
+            {rightPanel === item.label.toLowerCase() ? <XIcon width="14px" /> : item.icon}
+            <span>{item.label}</span>
+          </button>
+        ))}
       </div>
     </div>
   )

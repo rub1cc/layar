@@ -2,7 +2,7 @@ import { urlAtom } from '@/lib/state'
 import { ReloadIcon } from '@radix-ui/react-icons'
 import cheerio from 'cheerio'
 import { useAtomValue } from 'jotai'
-import { FC, useEffect, useState } from 'react'
+import { FC, ReactNode, useEffect, useState } from 'react'
 import { Panel } from './panel'
 
 export interface Metadata {
@@ -20,7 +20,6 @@ export interface Metadata {
   keywords: string
   source: string
   robots: string
-  jsonld: any[]
   headings: Array<{
     level: string
     text: string
@@ -113,15 +112,16 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
         </summary>
         <div className="p-2 space-y-4">
           <table>
-            {Object.keys(metadata || {}).map((key, index) => {
-              if (key.startsWith('og:')) {
-                return (
-                  <tr key={`og-${index}`} className="align-baseline">
-                    <td className="w-[150px] py-1.5">{key}</td>
-                    <td>{metadata[key]}</td>
-                  </tr>
-                )
+            {Object.keys(metadata || {}).map((key, index): ReactNode => {
+              if (!key.startsWith('og:')) {
+                return null
               }
+              return (
+                <tr key={`og-${index}`} className="align-baseline">
+                  <td className="w-[150px] py-1.5">{key}</td>
+                  <td>{metadata?.[key]}</td>
+                </tr>
+              )
             })}
           </table>
         </div>
@@ -133,15 +133,16 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
         </summary>
         <div className="p-2 space-y-4">
           <table>
-            {Object.keys(metadata || {}).map((key, index) => {
-              if (key.startsWith('twitter:')) {
-                return (
-                  <tr key={`twitter-${index}`} className="align-baseline">
-                    <td className="w-[150px] py-1.5">{key}</td>
-                    <td>{metadata[key]}</td>
-                  </tr>
-                )
+            {Object.keys(metadata || {}).map((key, index): ReactNode => {
+              if (!key.startsWith('twitter:')) {
+                return null
               }
+              return (
+                <tr key={`twitter-${index}`} className="align-baseline">
+                  <td className="w-[150px] py-1.5">{key}</td>
+                  <td>{metadata?.[key]}</td>
+                </tr>
+              )
             })}
           </table>
         </div>
@@ -152,7 +153,7 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
           Headings
         </summary>
         <div className="flex flex-col gap-2 p-2">
-          {metadata?.headings?.filter((heading) => heading.level === 'h1')?.length > 1 && (
+          {Boolean(metadata?.headings?.filter((heading) => heading.level === 'h1')?.length) && (
             <p>
               <span className="text-red-400">
                 This page has more than one <code>{'<h1>'}</code> tags
@@ -299,22 +300,20 @@ export const SEOPanel: FC = () => {
   const url = useAtomValue(urlAtom)
   const [metadata, setMetadata] = useState<Metadata | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<Error | null>(null)
 
   const getMetadata = async (): Promise<void> => {
     setLoading(true)
     window.electron.ipcRenderer
       .invoke('get-metadata', { url })
-      .then(({ status, data, robots, message }) => {
+      .then(({ status, data, robots }) => {
         if (status === 'error') {
-          setError(message)
           return
         }
 
         const $ = cheerio.load(data)
         const meta = {}
 
-        $('meta').each((index, element) => {
+        $('meta').each((_, element) => {
           const name = $(element).attr('name')
           const property = $(element).attr('property')
           const content = $(element).attr('content')
@@ -322,11 +321,11 @@ export const SEOPanel: FC = () => {
           if (property) meta[property] = content
         })
 
-        $('head title').each((index, element) => {
+        $('head title').each((_, element) => {
           meta['title'] = $(element).text()
         })
 
-        $('h1, h2, h3, h4, h5, h6').each((index, element) => {
+        $('h1, h2, h3, h4, h5, h6').each((_, element) => {
           if (!meta['headings']) meta['headings'] = []
           meta['headings'].push({
             level: $(element).prop('tagName').toLocaleLowerCase(),
@@ -334,14 +333,14 @@ export const SEOPanel: FC = () => {
           })
         })
 
-        $('link[rel="icon"]').each((index, element) => {
+        $('link[rel="icon"]').each((_, element) => {
           const rel = $(element).attr('rel')
           const href = $(element).attr('href')
           if (!meta['favicons']) meta['favicons'] = []
           meta['favicons'].push({ rel, href })
         })
 
-        $('a').each((index, element) => {
+        $('a').each((_, element) => {
           const rel = $(element).attr('rel')
           const href = $(element).attr('href')?.startsWith('http')
             ? $(element).attr('href')
@@ -356,7 +355,7 @@ export const SEOPanel: FC = () => {
         meta['url'] = $('meta[property="og:url"]').attr('content')
         meta['keywords'] = $('meta[name="keywords"]').attr('content')
 
-        $('img').each((index, element) => {
+        $('img').each((_, element) => {
           if (!meta['images']) meta['images'] = []
           meta['images'].push({
             src: $(element).attr('src'),

@@ -1,11 +1,13 @@
+import { mobileDevices } from '@/lib/devices'
 import {
   browserViewAtom,
   deviceAlignmentAtom,
+  devicesAtom,
   rightPanelAtom,
   searchingAtom,
   urlAtom
 } from '@/lib/state'
-import { cn } from '@/lib/utils'
+import { cn, generateRandomId } from '@/lib/utils'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,6 +51,7 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
   const url = useAtomValue(urlAtom)
   const [deviceAlignment, setDeviceAlignment] = useAtom(deviceAlignmentAtom)
   const [browserView, setBrowserView] = useAtom(browserViewAtom)
+  const [devices, setDevices] = useAtom(devicesAtom)
   const setSearching = useSetAtom(searchingAtom)
   const setRightPanel = useSetAtom(rightPanelAtom)
 
@@ -106,6 +109,14 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
         className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
         title="Device Alignment"
         onClick={() => {
+          if (devices.length === 0) {
+            setDevices([
+              {
+                ...mobileDevices[6],
+                id: generateRandomId()
+              }
+            ])
+          }
           setBrowserView(browserView === 'responsive' ? 'full' : 'responsive')
           window.electron.ipcRenderer.invoke('close-devtools')
           setRightPanel(null)

@@ -28,7 +28,7 @@ const SuggestionList: FC<SuggestionListProps> = (props) => {
 
   const suggestions = useMemo(() => {
     if (props.input) {
-      return history.filter((item) =>
+      return history?.filter((item) =>
         `${item.label} ${item.url}`.toLocaleLowerCase().includes(props.input.toLocaleLowerCase())
       )
     }

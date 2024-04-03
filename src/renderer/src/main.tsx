@@ -10,6 +10,7 @@ window.electron.ipcRenderer
   .invoke('app-meta', [])
   .then((meta) => {
     window.app = { webviewPreloadPath: meta.webviewPreloadPath }
+    window.api.store.set('lastOpened', Date.now())
     return root.render(
       <React.StrictMode>
         <App />

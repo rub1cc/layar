@@ -2,6 +2,10 @@ import Store from 'electron-store'
 import { StoreSchema } from '../../shared/types'
 
 const schema: Store.Schema<StoreSchema> = {
+  lastOpened: {
+    type: 'number',
+    default: Date.now()
+  },
   url: {
     type: 'string',
     default: ''
