@@ -6,6 +6,7 @@ export type StoreSchema = {
   devicesAlignment: 'grid' | 'horizontal' | 'vertical'
   browserView: 'full' | 'responsive'
   history: Array<{ url: string; label: string }>
+  panelSize: number
 }
 
 export interface Device {

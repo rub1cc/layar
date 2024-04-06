@@ -71,3 +71,5 @@ export const updateHistoryAtom = atom(null, (get, set, update: { url: string; la
   ]
   set(historyAtom, updatedHistory)
 })
+
+export const panelSizeAtom = persistAtom('panelSize', 30)

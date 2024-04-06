@@ -1,5 +1,5 @@
 import { Toolbar } from '@/components/toolbar'
-import { useAtomValue } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { useRef } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { AddressBar } from './components/address-bar'
@@ -14,6 +14,7 @@ import {
   browserViewAtom,
   deviceAlignmentAtom,
   devicesAtom,
+  panelSizeAtom,
   rightPanelAtom,
   searchingAtom,
   urlAtom
@@ -29,6 +30,7 @@ function App(): JSX.Element {
   const deviceAlignment = useAtomValue(deviceAlignmentAtom)
   const browserView = useAtomValue(browserViewAtom)
   const rightPanel = useAtomValue(rightPanelAtom)
+  const [panelSize, setPanelSize] = useAtom(panelSizeAtom)
 
   useRegisterShortcuts()
 
@@ -37,7 +39,12 @@ function App(): JSX.Element {
       {browserView === 'responsive' && <ZoomIndicator />}
       {url && <Toolbar />}
       <div className="flex flex-1">
-        <PanelGroup direction="horizontal">
+        <PanelGroup
+          direction="horizontal"
+          onLayout={(sizes) => {
+            sizes[1] > 0 && setPanelSize(sizes[1])
+          }}
+        >
           {url ? (
             <Panel>
               <div
@@ -71,7 +78,12 @@ function App(): JSX.Element {
           {rightPanel && (
             <>
               <PanelResizeHandle className="w-2 hover:bg-blue-500 transition duration-300" />
-              <Panel className="min-w-[200px]" onResize={() => devtoolsPanelRef.current?.resize()}>
+              <Panel
+                minSize={10}
+                maxSize={80}
+                defaultSize={panelSize}
+                onResize={() => devtoolsPanelRef.current?.resize()}
+              >
                 {rightPanel === 'seo' && <SEOPanel />}
                 {rightPanel === 'devtools' && <DevtoolsPanel ref={devtoolsPanelRef} />}
               </Panel>

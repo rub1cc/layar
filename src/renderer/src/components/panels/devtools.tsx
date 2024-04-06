@@ -28,7 +28,9 @@ export const DevtoolsPanel = forwardRef<
   }))
 
   useEffect(() => {
-    handleResize()
+    setTimeout(() => {
+      handleResize()
+    }, 0)
   }, [])
 
   return <Panel.Root ref={panelRef}></Panel.Root>

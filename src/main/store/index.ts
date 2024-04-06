@@ -31,6 +31,10 @@ const schema: Store.Schema<StoreSchema> = {
   history: {
     type: 'array',
     default: []
+  },
+  panelSize: {
+    type: 'number',
+    default: 30
   }
 }
 

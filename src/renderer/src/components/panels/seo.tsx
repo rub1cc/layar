@@ -1,6 +1,6 @@
 import { urlAtom } from '@/lib/state'
-import { ReloadIcon } from '@radix-ui/react-icons'
-import cheerio from 'cheerio'
+import { ExclamationTriangleIcon, ReloadIcon } from '@radix-ui/react-icons'
+import { load } from 'cheerio'
 import { useAtomValue } from 'jotai'
 import { FC, ReactNode, useEffect, useState } from 'react'
 import { Panel } from './panel'
@@ -21,8 +21,10 @@ export interface Metadata {
   source: string
   robots: string
   headings: Array<{
-    level: string
+    tag: string
+    level: number
     text: string
+    error: string
   }>
   images: Array<{
     src: string
@@ -31,6 +33,7 @@ export interface Metadata {
   links: Array<{
     rel: string
     href: string
+    anchor: string
   }>
   robotstxt: string
   [key: string]: any
@@ -40,7 +43,7 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
   return (
     <>
       <details className="text-white/85">
-        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
+        <summary className="p-2 border-t border-[#474747] hover:bg-[#004A76]">
           Site information
         </summary>
 
@@ -94,9 +97,7 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
       </details>
 
       <details className="text-white/85">
-        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
-          Robots.txt
-        </summary>
+        <summary className="p-2 border-t border-[#474747] hover:bg-[#004A76]">Robots.txt</summary>
         <div className="p-2">
           <code>
             {metadata?.robotstxt.split('\n')?.map((line, index) => {
@@ -107,7 +108,7 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
       </details>
 
       <details className="text-white/85">
-        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
+        <summary className="p-2  border-t border-[#474747] hover:bg-[#004A76]">
           Open graph tags
         </summary>
         <div className="p-2 space-y-4">
@@ -128,7 +129,7 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
       </details>
 
       <details className="text-white/85">
-        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
+        <summary className="p-2  border-t border-[#474747] hover:bg-[#004A76]">
           Twitter tags
         </summary>
         <div className="p-2 space-y-4">
@@ -147,79 +148,103 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
           </table>
         </div>
       </details>
-
-      <details className="text-white/85">
-        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
-          Headings
-        </summary>
-        <div className="flex flex-col gap-2 p-2">
-          {Boolean(metadata?.headings?.filter((heading) => heading.level === 'h1')?.length) && (
-            <p>
-              <span className="text-red-400">
-                This page has more than one <code>{'<h1>'}</code> tags
-              </span>
-            </p>
-          )}
-          {metadata?.headings?.filter((heading) => heading.level === 'h1')?.length === 0 && (
-            <p>
-              <span className="text-red-400">
-                This page has no <code>{'<h1>'}</code> tag
-              </span>
-            </p>
-          )}
-          {metadata?.headings?.map((heading, index) => {
-            return (
-              <div key={`heading-${index}`} className="flex gap-3 text-white/80">
-                <span
-                  className="text-xs text-neutral-500 self-start inline-block rounded-lg"
-                  style={{
-                    paddingLeft: (parseInt(heading.level.slice(1, 2)) - 1) * 36
-                  }}
-                >
-                  {'<' + heading.level + '>'}
-                </span>
-                <p>
-                  <span className="block">{heading.text}</span>
-                </p>
-              </div>
-            )
-          })}
-        </div>
-      </details>
-
-      <details className="text-white/85">
-        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
-          Anchors
-        </summary>
-        <div className="p-2 space-y-4">
-          <table className="w-full" cellPadding="4px">
-            <tr>
-              <td>rel</td>
-              <td>href</td>
-            </tr>
-            {metadata?.links?.map((link, index) => {
-              return (
-                <tr key={`link-${index}`}>
-                  <td>{link.rel}</td>
-                  <td>{link.href}</td>
-                </tr>
-              )
-            })}
-          </table>
-        </div>
-      </details>
-
-      {/* <details className="text-white/85">
-        <summary className="p-2 border-b border-t border-[#474747] hover:bg-[#004A76]">
-          Images
-        </summary>
-        <div className="p-2 space-y-4">
-          {metadata?.images?.map((image, index) => {
-            return <img key={`image-${index}`} src={image.src} alt={image.alt} className="w-full" />
-          })}
-        </div>
-      </details> */}
     </>
+  )
+}
+
+const TabHeadings: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
+  return (
+    <div className="flex flex-col gap-2 p-2">
+      {Number(metadata?.headings?.filter((heading) => heading.level === 1)?.length) > 1 && (
+        <p>
+          <span className="text-red-400">
+            This page has more than one <code>{'<h1>'}</code> tags
+          </span>
+        </p>
+      )}
+      {metadata?.headings?.filter((heading) => heading.level === 1)?.length === 0 && (
+        <p>
+          <span className="text-red-400">
+            This page has no <code>{'<h1>'}</code> tag
+          </span>
+        </p>
+      )}
+      {metadata?.headings?.map((heading, index) => {
+        return (
+          <div key={`heading-${index}`} className="flex gap-2 text-white/80">
+            <span
+              className="text-xs text-neutral-400 self-start inline-block rounded-lg"
+              style={{
+                paddingLeft: (heading.level - 1) * 36
+              }}
+            >
+              {`<${heading.tag}>`}
+            </span>
+            <div>
+              <p className="block">{heading.text}</p>
+              {heading.error.length > 0 &&
+                heading.error.map((error, index) => (
+                  <p className="text-red-400" key={error}>
+                    <ExclamationTriangleIcon className="w-4 inline-block mr-2" />
+                    <span>{error}</span>
+                  </p>
+                ))}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+const TabLinks: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
+  return (
+    <div className="p-2 text-white/85 space-y-4">
+      {metadata?.links?.map((link, index) => {
+        return (
+          <div key={`link-${index}`} className="border-b border-[#474747] pb-4">
+            <p>{link.href}</p>
+            <p>Text: {link.anchor}</p>
+            {link.anchor.length < 1 && (
+              <span className="text-red-400">
+                <ExclamationTriangleIcon className="w-4 inline-block mr-2" />
+                <span>
+                  This anchor has no text. Anchor text helps search engines understand what the link
+                  is about.
+                </span>
+              </span>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+const TabImages: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
+  return (
+    <div className="p-2 space-y-4 text-white/85">
+      {metadata?.images?.map((image, index) => {
+        return (
+          <div key={`image-${index}`} className="flex gap-2 border-b border-[#474747] pb-4">
+            <img src={image.src} alt={image.alt} className="w-20 h-20 object-contain" />
+            <div>
+              <p>{image.src}</p>
+              <p>Alt text: {image.alt}</p>
+              {image.alt.length < 1 && (
+                <span className="text-red-400">
+                  <ExclamationTriangleIcon className="w-4 inline-block mr-2" />
+                  <span>
+                    This image has no alt text. Alt text helps search engines understand what the
+                    image is about.
+                  </span>
+                </span>
+              )}
+            </div>
+          </div>
+        )
+      })}
+    </div>
   )
 }
 
@@ -310,7 +335,7 @@ export const SEOPanel: FC = () => {
           return
         }
 
-        const $ = cheerio.load(data)
+        const $ = load(data)
         const meta = {}
 
         $('meta').each((_, element) => {
@@ -325,12 +350,35 @@ export const SEOPanel: FC = () => {
           meta['title'] = $(element).text()
         })
 
+        let lastHeadingElement = 'h0'
+
         $('h1, h2, h3, h4, h5, h6').each((_, element) => {
           if (!meta['headings']) meta['headings'] = []
-          meta['headings'].push({
-            level: $(element).prop('tagName').toLocaleLowerCase(),
-            text: $(element).text()
-          })
+
+          const tag = $(element).prop('tagName').toLocaleLowerCase()
+          const level = parseInt(tag.charAt(1))
+          const text = $(element).text()
+
+          const obj = {
+            tag,
+            level,
+            text: $(element).text(),
+            error: []
+          }
+
+          if (!text) {
+            obj['error'].push(`Empty heading. Expected text inside <${tag}>`)
+          }
+
+          if (
+            lastHeadingElement &&
+            parseInt(tag.charAt(1)) - parseInt(lastHeadingElement.charAt(1)) > 1
+          ) {
+            obj['error'].push(`Skipped level. Expected <h${level - 1}> before <${tag}>`)
+          }
+
+          meta['headings'].push(obj)
+          lastHeadingElement = tag
         })
 
         $('link[rel="icon"]').each((_, element) => {
@@ -342,11 +390,13 @@ export const SEOPanel: FC = () => {
 
         $('a').each((_, element) => {
           const rel = $(element).attr('rel')
-          const href = $(element).attr('href')?.startsWith('http')
-            ? $(element).attr('href')
-            : url + $(element).attr('href')
+          const href = $(element).attr('href')?.startsWith('/')
+            ? new URL($(element).attr('href') as string, url).href
+            : $(element).attr('href')
+
+          const anchor = $(element).text()
           if (!meta['links']) meta['links'] = []
-          meta['links'].push({ rel, href })
+          meta['links'].push({ rel, href, anchor })
         })
 
         meta['charset'] = $('meta[charset]').attr('charset')
@@ -358,20 +408,26 @@ export const SEOPanel: FC = () => {
         $('img').each((_, element) => {
           if (!meta['images']) meta['images'] = []
           meta['images'].push({
-            src: $(element).attr('src'),
+            src: $(element).attr('src')?.startsWith('/')
+              ? new URL($(element).attr('src') as string, url).href
+              : ($(element).attr('src') as string),
             alt: $(element).attr('alt')
           })
         })
+
+        console.log(meta['images'])
 
         // get robot
         meta['robots'] = $('meta[name="robots"]').attr('content')
         meta['robotstxt'] = robots
 
         setMetadata(meta as Metadata)
-
-        console.log(meta, { robots })
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        setTimeout(() => {
+          setLoading(false)
+        }, 500)
+      })
   }
 
   useEffect(() => {
@@ -388,7 +444,10 @@ export const SEOPanel: FC = () => {
           </button>
           <Panel.TabsList
             items={[
-              { value: 'meta', label: 'Meta' },
+              { value: 'meta', label: 'Overview' },
+              { value: 'headings', label: 'Headings' },
+              { value: 'links', label: 'Links' },
+              { value: 'images', label: 'Images' },
               { value: 'social-preview', label: 'Social Media Preview' }
             ]}
           />
@@ -403,6 +462,39 @@ export const SEOPanel: FC = () => {
           }
         >
           <TabMeta metadata={metadata} />
+        </Panel.TabsContent>
+        <Panel.TabsContent
+          value="headings"
+          isLoading={loading}
+          renderLoading={
+            <p className="text-white/60 p-2">
+              We are getting the data for you. This should only take a few seconds.
+            </p>
+          }
+        >
+          <TabHeadings metadata={metadata} />
+        </Panel.TabsContent>
+        <Panel.TabsContent
+          value="links"
+          isLoading={loading}
+          renderLoading={
+            <p className="text-white/60 p-2">
+              We are getting the data for you. This should only take a few seconds.
+            </p>
+          }
+        >
+          <TabLinks metadata={metadata} />
+        </Panel.TabsContent>
+        <Panel.TabsContent
+          value="images"
+          isLoading={loading}
+          renderLoading={
+            <p className="text-white/60 p-2">
+              We are getting the data for you. This should only take a few seconds.
+            </p>
+          }
+        >
+          <TabImages metadata={metadata} />
         </Panel.TabsContent>
         <Panel.TabsContent
           value="social-preview"

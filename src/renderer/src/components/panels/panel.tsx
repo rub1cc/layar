@@ -13,7 +13,7 @@ const PanelRoot = forwardRef<HTMLDivElement, PanelProps>((props, ref) => {
     <div
       ref={ref}
       className={cn(
-        'bg-[#282828] w-full h-screen overflow-auto pt-[40px] border-r border-l border-white/5 text-xs',
+        'bg-[#282828] w-full h-screen overflow-auto pt-[40px] border-r border-l border-white/5 text-xs break-words',
         props.className
       )}
     >

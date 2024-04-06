@@ -49,7 +49,7 @@ export const ToolbarSecondary: React.FC<ToolbarProps> = () => {
   )
 
   return (
-    <div className="bg-neutral-800 w-8 pt-[52px]">
+    <div className="bg-neutral-800 w-8 pt-[52px] border-l border-[#474747]">
       <div className="flex transform rotate-90 gap-1">
         {menu.map((item, index) => (
           <button
