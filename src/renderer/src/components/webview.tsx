@@ -1,4 +1,4 @@
-import { searchingAtom, updateHistoryAtom, urlAtom } from '@/lib/state'
+import { searchingAtom, updateHistoryAtom, urlAtom, webviewLoadingAtom } from '@/lib/state'
 import { useAtom, useSetAtom } from 'jotai'
 import { FC, useEffect, useRef, useState } from 'react'
 
@@ -6,6 +6,7 @@ export const Webview: FC = () => {
   const ref = useRef<Electron.WebviewTag>(null)
   const [error, setError] = useState<{ code: number; description: string } | null>(null)
   const setSearching = useSetAtom(searchingAtom)
+  const setWebviewLoading = useSetAtom(webviewLoadingAtom)
 
   const [url, setUrl] = useAtom(urlAtom)
   const updateHistory = useSetAtom(updateHistoryAtom)
@@ -35,12 +36,22 @@ export const Webview: FC = () => {
       })
 
       const didStartLoading = (): void => {
+        setWebviewLoading(true)
         setError(null)
       }
 
       webview.addEventListener('did-start-loading', didStartLoading)
       handlerRemovers.push(() => {
         webview.removeEventListener('did-start-loading', didStartLoading)
+      })
+
+      const didStopLoading = (): void => {
+        setWebviewLoading(false)
+      }
+
+      webview.addEventListener('did-stop-loading', didStopLoading)
+      handlerRemovers.push(() => {
+        webview.removeEventListener('did-stop-loading', didStopLoading)
       })
 
       const didFailLoadHandler = ({
@@ -51,6 +62,7 @@ export const Webview: FC = () => {
           // Aborted error, can be ignored
           return
         }
+        setWebviewLoading(false)
         setError({
           code: errorCode,
           description: errorDescription
@@ -69,6 +81,7 @@ export const Webview: FC = () => {
 
       return () => {
         handlerRemovers.forEach((remove) => remove())
+        setWebviewLoading(false)
       }
     }
   }, [ref])

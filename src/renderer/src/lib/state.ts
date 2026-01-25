@@ -58,6 +58,11 @@ export const browserViewAtom = persistAtom('browserView')
 export const searchingAtom = atom(false)
 
 /**
+ * atom for tracking loading state in full view
+ */
+export const webviewLoadingAtom = atom(false)
+
+/**
  * atom for handling the history
  */
 export const historyAtom = persistAtom('history')

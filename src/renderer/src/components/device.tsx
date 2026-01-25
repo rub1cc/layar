@@ -22,7 +22,6 @@ type DeviceProps = {
 export const Device: FC<DeviceProps> = (props) => {
   const ref = useRef<Electron.WebviewTag>(null)
   const [rotated, setRotated] = useState<boolean>(false)
-  const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<{ code: number; description: string } | null>(null)
 
   const [url, setUrl] = useAtom(urlAtom)
@@ -101,22 +100,12 @@ export const Device: FC<DeviceProps> = (props) => {
       })
 
       const didStartLoading = (): void => {
-        setLoading(true)
         setError(null)
       }
 
       webview.addEventListener('did-start-loading', didStartLoading)
       handlerRemovers.push(() => {
         webview.removeEventListener('did-start-loading', didStartLoading)
-      })
-
-      const didStopLoading = (): void => {
-        setLoading(false)
-      }
-
-      webview.addEventListener('did-stop-loading', didStopLoading)
-      handlerRemovers.push(() => {
-        webview.removeEventListener('did-stop-loading', didStopLoading)
       })
 
       const didFailLoadHandler = ({
@@ -200,7 +189,6 @@ export const Device: FC<DeviceProps> = (props) => {
         {!isShowDevices && (
           <div className="flex flex-wrap items-center gap-2 py-1">
             <button
-              className={cn(loading && 'animate-spin')}
               onClick={() => {
                 if (ref.current) {
                   ref.current.reload()

@@ -5,7 +5,8 @@ import {
   devicesAtom,
   rightPanelAtom,
   searchingAtom,
-  urlAtom
+  urlAtom,
+  webviewLoadingAtom
 } from '@/lib/state'
 import { cn, generateRandomId } from '@/lib/utils'
 import {
@@ -49,6 +50,7 @@ const alignment = {
 
 export const Toolbar: React.FC<ToolbarProps> = () => {
   const url = useAtomValue(urlAtom)
+  const webviewLoading = useAtomValue(webviewLoadingAtom)
   const [deviceAlignment, setDeviceAlignment] = useAtom(deviceAlignmentAtom)
   const [browserView, setBrowserView] = useAtom(browserViewAtom)
   const [devices, setDevices] = useAtom(devicesAtom)
@@ -94,15 +96,17 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
           className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
           onClick={handleReloadWebview}
         >
-          <RotateCw className="w-4 h-4" />
+          <RotateCw
+            className={cn('w-4 h-4', browserView === 'full' && webviewLoading && 'animate-spin')}
+          />
           <span className="hidden">Reload</span>
         </button>
       </div>
       <div
         onClick={() => setSearching(true)}
-        className="rounded-lg bg-neutral-900/50 border border-neutral-700 text-white/80 border-transparent text-xs w-full p-2 text-center line-clamp-1"
+        className="rounded-lg bg-neutral-900/50 border border-neutral-700 text-white/80 border-transparent text-xs w-full p-2 text-center truncate"
       >
-        {(url && new URL(url).hostname) || 'Search or enter website address'}
+        {url || 'Search or enter website address'}
       </div>
 
       <button
