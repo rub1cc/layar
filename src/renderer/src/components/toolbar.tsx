@@ -46,7 +46,9 @@ const alignment = {
     label: 'Vertical',
     icon: <GalleryVertical className="w-4 h-4" />
   }
-}
+} as const
+
+const alignmentOrder: Array<keyof typeof alignment> = ['horizontal', 'vertical', 'grid']
 
 export const Toolbar: React.FC<ToolbarProps> = () => {
   const url = useAtomValue(urlAtom)
@@ -132,38 +134,40 @@ export const Toolbar: React.FC<ToolbarProps> = () => {
           <MonitorSmartphone className="w-4 h-4" />
         )}
       </button>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
-            title="Device Alignment"
-          >
-            {alignment[deviceAlignment].icon}
-            <span className="hidden">{alignment[deviceAlignment].label}</span>
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuPortal>
-          <DropdownMenuContent
-            align="end"
-            className="bg-neutral-800 border border-neutral-700 p-1 rounded-md text-white/80 shadow-xl text-sm space-y-1"
-          >
-            {Object.entries(alignment).map(([key, value]) => (
-              <DropdownMenuItem asChild key={key}>
-                <button
-                  className={cn(
-                    'px-2 py-1 hover:bg-neutral-700 rounded-md flex items-center gap-2 w-full',
-                    deviceAlignment === key && 'bg-neutral-700'
-                  )}
-                  onClick={() => setDeviceAlignment(key as unknown as keyof typeof alignment)}
-                >
-                  {value.icon}
-                  <span>{value.label}</span>
-                </button>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenuPortal>
-      </DropdownMenu>
+      {browserView === 'responsive' && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="text-white hover:bg-white/10 p-2 rounded-full cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+              title="Device Alignment"
+            >
+              {alignment[deviceAlignment].icon}
+              <span className="hidden">{alignment[deviceAlignment].label}</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuContent
+              align="end"
+              className="bg-neutral-800 border border-neutral-700 p-1 rounded-md text-white/80 shadow-xl text-sm space-y-1"
+            >
+              {alignmentOrder.map((key) => (
+                <DropdownMenuItem asChild key={key}>
+                  <button
+                    className={cn(
+                      'px-2 py-1 hover:bg-neutral-700 rounded-md flex items-center gap-2 w-full',
+                      deviceAlignment === key && 'bg-neutral-700'
+                    )}
+                    onClick={() => setDeviceAlignment(key)}
+                  >
+                    {alignment[key].icon}
+                    <span>{alignment[key].label}</span>
+                  </button>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenuPortal>
+        </DropdownMenu>
+      )}
     </div>
   )
 }

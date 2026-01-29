@@ -24,7 +24,7 @@ export interface Metadata {
     tag: string
     level: number
     text: string
-    error: string
+    error: string[]
   }>
   images: Array<{
     src: string
@@ -88,7 +88,7 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
                   className="align-baseline text-white/85"
                 >
                   <td className="w-[150px] py-1.5">{item.label}</td>
-                  <td>{item.value}</td>
+                  <td className="break-all">{item.value}</td>
                 </tr>
               )
             })}
@@ -120,7 +120,7 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
               return (
                 <tr key={`og-${index}`} className="align-baseline">
                   <td className="w-[150px] py-1.5">{key}</td>
-                  <td>{metadata?.[key]}</td>
+                  <td className="break-all">{metadata?.[key]}</td>
                 </tr>
               )
             })}
@@ -141,7 +141,7 @@ const TabMeta: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
               return (
                 <tr key={`twitter-${index}`} className="align-baseline">
                   <td className="w-[150px] py-1.5">{key}</td>
-                  <td>{metadata?.[key]}</td>
+                  <td className="break-all">{metadata?.[key]}</td>
                 </tr>
               )
             })}
@@ -183,7 +183,7 @@ const TabHeadings: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
             <div>
               <p className="block">{heading.text}</p>
               {heading.error.length > 0 &&
-                heading.error.map((error, index) => (
+                heading.error.map((error) => (
                   <p className="text-red-400" key={error}>
                     <ExclamationTriangleIcon className="w-4 inline-block mr-2" />
                     <span>{error}</span>
@@ -203,8 +203,8 @@ const TabLinks: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
       {metadata?.links?.map((link, index) => {
         return (
           <div key={`link-${index}`} className="border-b border-[#474747] pb-4">
-            <p>{link.href}</p>
-            <p>Text: {link.anchor}</p>
+            <p className="break-all">{link.href}</p>
+            <p className="break-words">Text: {link.anchor}</p>
             {link.anchor.length < 1 && (
               <span className="text-red-400">
                 <ExclamationTriangleIcon className="w-4 inline-block mr-2" />
@@ -225,13 +225,15 @@ const TabImages: FC<{ metadata: Metadata | null }> = ({ metadata }) => {
   return (
     <div className="p-2 space-y-4 text-white/85">
       {metadata?.images?.map((image, index) => {
+        const altText = image.alt ?? ''
+        const src = image.src ?? ''
         return (
           <div key={`image-${index}`} className="flex gap-2 border-b border-[#474747] pb-4">
-            <img src={image.src} alt={image.alt} className="w-20 h-20 object-contain" />
+            <img src={src} alt={altText} className="w-20 h-20 object-contain" />
             <div>
-              <p>{image.src}</p>
-              <p>Alt text: {image.alt}</p>
-              {image.alt.length < 1 && (
+              <p className="break-all">{src}</p>
+              <p>Alt text: {altText}</p>
+              {altText.length < 1 && (
                 <span className="text-red-400">
                   <ExclamationTriangleIcon className="w-4 inline-block mr-2" />
                   <span>
@@ -336,7 +338,7 @@ export const SEOPanel: FC = () => {
         }
 
         const $ = load(data)
-        const meta = {}
+        const meta: Record<string, any> = {}
 
         $('meta').each((_, element) => {
           const name = $(element).attr('name')
@@ -363,7 +365,7 @@ export const SEOPanel: FC = () => {
             tag,
             level,
             text: $(element).text(),
-            error: []
+            error: [] as string[]
           }
 
           if (!text) {
@@ -407,11 +409,11 @@ export const SEOPanel: FC = () => {
 
         $('img').each((_, element) => {
           if (!meta['images']) meta['images'] = []
+          const rawSrc = $(element).attr('src')
+          if (!rawSrc) return
           meta['images'].push({
-            src: $(element).attr('src')?.startsWith('/')
-              ? new URL($(element).attr('src') as string, url).href
-              : ($(element).attr('src') as string),
-            alt: $(element).attr('alt')
+            src: rawSrc.startsWith('/') ? new URL(rawSrc, url).href : rawSrc,
+            alt: $(element).attr('alt') ?? ''
           })
         })
 
